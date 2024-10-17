@@ -7,13 +7,13 @@
     @apply font-primary leading-loose;
   }
   .h1 {
-    @apply text-[48px] font-secondary  xl:text-[80px] leading-[1.1];
+    @apply text-[40px] font-secondary uppercase xl:text-[75px] leading-[1.1];
   }
   .h2 {
-    @apply text-[36px] font-secondary  xl:text-[48px] leading-[1.1];
+    @apply text-[28px] font-secondary uppercase xl:text-[45px] leading-[1.1];
   }
   .h3 {
-    @apply text-[20px] font-secondary  xl:text-[24px] leading-[1.1];
+    @apply text-[16px] font-secondary uppercase xl:text-[24px] leading-[1.1];
   }
   :root {
     --background: 0 0% 100%;
