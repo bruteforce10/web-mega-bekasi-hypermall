@@ -1,5 +1,3 @@
-// app/api/upload/route.js
-
 import { NextResponse } from "next/server";
 import multer from "multer";
 import { promisify } from "util";

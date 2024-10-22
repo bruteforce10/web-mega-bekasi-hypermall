@@ -79,7 +79,9 @@ const Navbar = () => {
         )}
       >
         <div className="container flex justify-between  ">
-          <Image src="/logo.svg" alt="logo" width={80} height={80} />
+          <Link href="/" legacyBehavior passHref>
+            <Image src="/logo.svg" alt="logo" width={80} height={80} />
+          </Link>
           {/* Web Version Navbar */}
           <NavigationMenu className="max-md:hidden">
             <NavigationMenuList>
