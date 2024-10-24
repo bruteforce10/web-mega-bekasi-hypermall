@@ -2,6 +2,7 @@ import TextTitle from "@/components/TextTitle";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React from "react";
+import Card from "./_component/Card";
 
 const EventPage = () => {
   return (
@@ -39,26 +40,12 @@ const EventPage = () => {
           <TextTitle title={"Throwback Moments"} className={"text-start"} />
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {[...Array(4)].map((_, index) => (
-              <div key={index} className="rounded-xl overflow-hidden">
-                <Image
-                  src={"/dummy-promo.webp"}
-                  width={600}
-                  height={600}
-                  alt="megabekasi-hypermall"
-                  className="w-full object-cover"
-                />
-                <div className="p-4 bg-[#F1F5F9] flex flex-col items-baseline justify-between min-h-[180px] max-h-[300px]">
-                  <p className="text-sm uppercase text-muted-foreground">
-                    24 SEPT 2023
-                  </p>
-                  <h4 className="text-xl font-bold">
-                    My Melody & Kuromi Lunar Town
-                  </h4>
-                  <Button variant="link" className="p-0 text-sm text-black">
-                    lean more
-                  </Button>
-                </div>
-              </div>
+              <Card
+                key={index}
+                image={"/dummy-opening-tenant.webp"}
+                title={"Sawadikap – Thailand Culinary Festival"}
+                date={"03 Oct 2024"}
+              />
             ))}
           </div>
         </div>
