@@ -27,6 +27,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import titleToSlug from "@/lib/slug";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategories } from "@/app/redux/directory/directorySlicer";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters").max(50),
@@ -45,7 +47,6 @@ const DirectoryPage = () => {
   const [image, setImage] = useState("");
   const [descriptionText, setDescriptionText] = useState("");
   const [coverId, setCoverId] = useState("");
-  const [categoriesData, setCategoriesData] = useState([]);
   const [imageData, setImageData] = useState(null);
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -58,12 +59,8 @@ const DirectoryPage = () => {
     },
     reValidateMode: "onSubmit",
   });
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      console.log(window);
-    }
-  }, []);
+  const { categories } = useSelector((state) => state.directory);
+  const dispatch = useDispatch();
 
   const getDataImage = async (id) => {
     const res = await axios.get(
@@ -72,20 +69,11 @@ const DirectoryPage = () => {
     setImageData(res?.data?.data);
   };
 
-  const getDataCategories = async () => {
-    const res = await axios.get("http://localhost:3001/api/v1/cms/categories");
-    setCategoriesData(res?.data?.data);
-  };
-
   async function onSubmit(values) {
     if (!imageData) {
       alert("Please add an image");
       return;
     }
-
-    // if (editorRef.current) {
-    //   console.log(editorRef.current.getContent());
-    // }
 
     const imagesMap = imageData?.images?.map((image) => image._id);
     const data = {
@@ -108,7 +96,10 @@ const DirectoryPage = () => {
       return;
     }
 
+    window.localStorage.removeItem("coverId");
+    form.reset();
     alert("Cover directory created successfully");
+    window.location.reload();
   }
 
   useEffect(() => {
@@ -118,7 +109,7 @@ const DirectoryPage = () => {
       getDataImage(coverIdFromLocalStorage);
     }
 
-    getDataCategories();
+    dispatch(fetchCategories());
   }, [image]);
 
   const onChangeImage = (event) => {
@@ -183,7 +174,7 @@ const DirectoryPage = () => {
   };
 
   return (
-    <div className="container mx-auto ml-12 space-y-8 mt-12">
+    <div className="container mx-auto ml-12 space-y-8 mt-12 pb-24">
       <div className="flex justify-between gap-12">
         <div>
           <div className="space-y-4 ">
@@ -199,7 +190,7 @@ const DirectoryPage = () => {
               <Input
                 type="text"
                 placeholder="deskripsi gambar"
-                value={descriptionText || imageData?.title}
+                value={imageData?.title ? imageData?.title : descriptionText}
                 onChange={(e) => setDescriptionText(e.target.value)}
                 disabled={coverId}
               />
@@ -292,7 +283,7 @@ const DirectoryPage = () => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {categoriesData?.map((item) => (
+                    {categories?.map((item) => (
                       <SelectItem key={item?._id} value={item?._id}>
                         {item?.name}
                       </SelectItem>

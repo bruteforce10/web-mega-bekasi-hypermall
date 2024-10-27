@@ -31,10 +31,18 @@ import {
 import { motion, spring } from "framer-motion";
 import { menuItems } from "@/lib/data";
 import clsx from "clsx";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
+  const pathname = usePathname();
   const { item_one, item_two, item_three, item_four, item_five } = menuItems;
   const [isScrolled, setIsScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      console.log(window);
+    }
+  }, []);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -51,6 +59,16 @@ const Navbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  console.log(pathname);
+
+  if (
+    pathname === "/dashboard" ||
+    pathname === "/dashboard/directory" ||
+    pathname === "/dashboard/promo"
+  ) {
+    return null;
+  }
 
   return (
     <>

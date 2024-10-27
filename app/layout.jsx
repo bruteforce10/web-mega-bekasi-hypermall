@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FacilitySection from "@/components/FacilitySection";
+import ReduxProvider from "@/components/ReduxProvider";
 
 const satoshi = localFont({
   src: [
@@ -50,10 +51,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={` ${satoshi.variable} ${gothics.variable}`}>
-        <Navbar />
-        {children}
-        <FacilitySection />
-        <Footer />
+        <ReduxProvider>
+          <Navbar />
+          {children}
+          <FacilitySection />
+          <Footer />
+        </ReduxProvider>
       </body>
     </html>
   );

@@ -1,9 +1,11 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { footerData } from "@/lib/data";
+import { usePathname } from "next/navigation";
 
 const ListTitle = ({ data }) => {
   return (
@@ -21,8 +23,17 @@ const ListTitle = ({ data }) => {
 };
 
 const Footer = () => {
+  const pathname = usePathname();
   const { address, socialMedia, visitInformation, mbhConnect, contactUs } =
     footerData;
+
+  if (
+    pathname === "/dashboard" ||
+    pathname === "/dashboard/directory" ||
+    pathname === "/dashboard/promo"
+  ) {
+    return null;
+  }
 
   return (
     <footer className="container mx-auto px-2  pt-24">

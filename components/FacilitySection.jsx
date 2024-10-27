@@ -1,5 +1,7 @@
+"use client";
 import { facilities } from "@/lib/data";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 const IconTitle = ({ icon, title, subTitle }) => {
@@ -17,6 +19,16 @@ const IconTitle = ({ icon, title, subTitle }) => {
 };
 
 const FacilitySection = () => {
+  const pathname = usePathname();
+
+  if (
+    pathname === "/dashboard" ||
+    pathname === "/dashboard/directory" ||
+    pathname === "/dashboard/promo"
+  ) {
+    return null;
+  }
+
   return (
     <section className=" bg-gradient-to-r mt-12 max-md:px-20  md:mt-24 py-16 from-primary to-[#FF3333]">
       <div className="px-2 mx-auto  container flex max-md:flex-col gap-12 xl:gap-24 max-xl:flex-wrap  justify-center md:items-center">
