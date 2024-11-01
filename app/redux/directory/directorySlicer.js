@@ -3,6 +3,9 @@ import axios from "axios";
 
 const initialState = {
   categories: [],
+  isLoadingCategories: false,
+  directories: [],
+  isLoadingDirectory: false,
 };
 
 export const fetchCategories = createAsyncThunk(
@@ -15,24 +18,52 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
+export const fetchDirectories = createAsyncThunk(
+  "directory/fetchDirectories",
+  async () => {
+    const response = await axios.get(
+      "http://localhost:3001/api/v1/cms/directory"
+    );
+    return response?.data?.data;
+  }
+);
+
 const directorySlice = createSlice({
   name: "directory",
   initialState,
   reducers: {
-    setCurrentUser: (state, action) => {
-      state.currentUser = action.payload;
+    setLoadingDirectory: (state, action) => {
+      state.isLoadingDirectory = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
+      // Fetch Categories Cases
+      .addCase(fetchCategories.pending, (state) => {
+        state.isLoadingCategories = true;
+      })
       .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.isLoadingCategories = false;
         state.categories = action.payload;
-        state.status = "idle";
       })
       .addCase(fetchCategories.rejected, (state) => {
-        state.status = "failed";
+        state.isLoadingCategories = false;
+      })
+
+      // Fetch Directories Cases
+      .addCase(fetchDirectories.pending, (state) => {
+        state.isLoadingDirectory = true;
+      })
+      .addCase(fetchDirectories.fulfilled, (state, action) => {
+        state.isLoadingDirectory = false;
+        state.directories = action.payload;
+      })
+      .addCase(fetchDirectories.rejected, (state) => {
+        state.isLoadingDirectory = false;
       });
   },
 });
+
+export const { setLoadingDirectory } = directorySlice.actions;
 
 export default directorySlice.reducer;

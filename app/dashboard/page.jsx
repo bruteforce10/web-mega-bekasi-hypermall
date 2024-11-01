@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import ImageViewList from "../_component/ImageViewList";
+
 import axios from "axios";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import titleToSlug from "@/lib/slug";
+import ImageViewList from "./_component/ImageViewList";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters").max(50),
@@ -58,12 +59,6 @@ const DirectoryPage = () => {
     },
     reValidateMode: "onSubmit",
   });
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      console.log(window);
-    }
-  }, []);
 
   const getDataImage = async (id) => {
     const res = await axios.get(

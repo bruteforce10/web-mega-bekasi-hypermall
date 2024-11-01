@@ -1,5 +1,4 @@
 "use client";
-import BundledEditor from "@/components/BundledEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,7 +27,12 @@ import {
 } from "@/components/ui/select";
 import titleToSlug from "@/lib/slug";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories } from "@/app/redux/directory/directorySlicer";
+import {
+  fetchCategories,
+  setLoadingDirectory,
+} from "@/app/redux/directory/directorySlicer";
+import RichEditor from "@/components/RichEditor";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters").max(50),
@@ -59,7 +63,9 @@ const DirectoryPage = () => {
     },
     reValidateMode: "onSubmit",
   });
-  const { categories } = useSelector((state) => state.directory);
+  const { categories, isLoadingDirectory } = useSelector(
+    (state) => state.directory
+  );
   const dispatch = useDispatch();
 
   const getDataImage = async (id) => {
@@ -70,8 +76,10 @@ const DirectoryPage = () => {
   };
 
   async function onSubmit(values) {
+    dispatch(setLoadingDirectory(true));
     if (!imageData) {
       alert("Please add an image");
+      dispatch(setLoadingDirectory(false));
       return;
     }
 
@@ -93,11 +101,13 @@ const DirectoryPage = () => {
 
     if (!response.ok) {
       alert("Failed to create cover directory");
+      dispatch(setLoadingDirectory(false));
       return;
     }
 
     window.localStorage.removeItem("coverId");
     form.reset();
+    dispatch(setLoadingDirectory(false));
     alert("Cover directory created successfully");
     window.location.reload();
   }
@@ -118,6 +128,7 @@ const DirectoryPage = () => {
   };
 
   const handleSubmitImage = async () => {
+    dispatch(setLoadingDirectory(true));
     try {
       const formData = new FormData();
       formData.append("image", image);
@@ -166,10 +177,12 @@ const DirectoryPage = () => {
           setCoverId(coverData?.data._id);
 
           inputUpload.value = "";
+          dispatch(setLoadingDirectory(false));
         }
       }
     } catch (error) {
       console.error("Error during image submission:", error);
+      dispatch(setLoadingDirectory(false));
     }
   };
 
@@ -201,11 +214,18 @@ const DirectoryPage = () => {
                 height={300}
               />
               <Button
-                variant="secondary"
                 onClick={handleSubmitImage}
+                disabled={isLoadingDirectory}
                 className="py-0"
               >
-                Submit Gambar
+                {isLoadingDirectory ? (
+                  <>
+                    <Loader2 className=" h-4 w-4 animate-spin" />
+                    <span className="ml-2">Loading</span>
+                  </>
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </div>
           )}
@@ -295,33 +315,17 @@ const DirectoryPage = () => {
             )}
           />
 
-          <BundledEditor
-            onInit={(_evt, editor) => (editorRef.current = editor)}
-            init={{
-              height: 200,
-              menubar: false,
-              plugins: [
-                "advlist",
-                "anchor",
-                "autolink",
-                "help",
-                "image",
-                "link",
-                "lists",
-                "searchreplace",
-                "table",
-                "wordcount",
-              ],
-              toolbar:
-                "undo redo | blocks | " +
-                "bold italic forecolor | alignleft aligncenter " +
-                "alignright alignjustify | bullist numlist outdent indent | " +
-                "removeformat | image | link | help",
-              content_style:
-                "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-            }}
-          />
-          <Button type="submit">Submit</Button>
+          <RichEditor reff={editorRef} />
+          <Button type="submit" disabled={isLoadingDirectory}>
+            {isLoadingDirectory ? (
+              <>
+                <Loader2 className=" h-4 w-4 animate-spin" />
+                <span className="ml-2">Loading</span>
+              </>
+            ) : (
+              "Submit"
+            )}
+          </Button>
         </form>
       </Form>
     </div>

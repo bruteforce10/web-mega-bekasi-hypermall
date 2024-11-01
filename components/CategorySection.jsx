@@ -1,9 +1,14 @@
+"use client";
 import Image from "next/image";
 import TextTitle from "./TextTitle";
 import { categorys } from "@/lib/data";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import titleToSlug from "@/lib/slug";
 
 const CategorySection = () => {
+  const { categories } = useSelector((state) => state.directory);
+
   return (
     <section className="px-2">
       <TextTitle
@@ -30,14 +35,14 @@ const CategorySection = () => {
         }
       />
       <div className="container mx-auto  gap-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6  mt-12">
-        {categorys.map((category, index) => (
+        {categories.map((category, index) => (
           <Link
-            href={category.href}
+            href={"#"}
             key={index}
             className="relative mx-auto group overflow-hidden  rounded-2xl w-fit"
           >
             <Image
-              src={category.image}
+              src={"/category/" + titleToSlug(category.name) + ".webp"}
               alt={"megabekasi-hypermall-kategori" + "-" + category.title}
               height={300}
               width={300}
@@ -45,7 +50,7 @@ const CategorySection = () => {
             />
             <div className="absolute bottom-0 text-center left-0 right-0">
               <h3 className="text-white relative top-20 text-xl font-medium group-hover:scale-90 transition-all duration-500">
-                {category.title}
+                {category.name}
               </h3>
               <div className=" bg-gradient-to-b h-24 from-transparent to-black/70" />
             </div>

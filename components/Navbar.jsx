@@ -32,17 +32,13 @@ import { motion, spring } from "framer-motion";
 import { menuItems } from "@/lib/data";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
+import { Input } from "./ui/input";
+import { SearchIcon } from "lucide-react";
 
 const Navbar = () => {
   const pathname = usePathname();
   const { item_one, item_two, item_three, item_four, item_five } = menuItems;
   const [isScrolled, setIsScrolled] = React.useState(false);
-
-  React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      console.log(window);
-    }
-  }, []);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -59,8 +55,6 @@ const Navbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  console.log(pathname);
 
   if (
     pathname === "/dashboard" ||
@@ -82,8 +76,15 @@ const Navbar = () => {
               <FaInstagram className="text-white hover:text-white/70 text-2xl " />
             </Link>
             <Link href="#">
-              <FaTiktok className="text-white hover:text-white/70 text-xl " />
+              <FaTiktok className="text-white hover:text-white/70 text-2xl " />
             </Link>
+            <div layout className="w-full">
+              <SearchIcon className="text-black/40 absolute mt-2 ml-2 hover:text-white/70 w-4 h-4 " />
+              <motion.Input
+                className="w-48 focus:w-60  h-8 pl-8 rounded-full bg-white"
+                placeholder="Search..."
+              />
+            </div>
           </div>
         </div>
       </div>

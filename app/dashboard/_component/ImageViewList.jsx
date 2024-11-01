@@ -7,12 +7,6 @@ const ImageViewList = ({ image }) => {
   const [dataImage, setDataImage] = useState(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      console.log(window);
-    }
-  }, []);
-
-  useEffect(() => {
     setDataImage(image?.images);
   }, [image]);
 
