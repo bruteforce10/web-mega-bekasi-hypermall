@@ -59,7 +59,8 @@ const Navbar = () => {
   if (
     pathname === "/dashboard" ||
     pathname === "/dashboard/directory" ||
-    pathname === "/dashboard/promo"
+    pathname === "/dashboard/promo" ||
+    pathname === "/dashboard/article"
   ) {
     return null;
   }
@@ -79,9 +80,9 @@ const Navbar = () => {
               <FaTiktok className="text-white hover:text-white/70 text-2xl " />
             </Link>
             <div layout className="w-full">
-              <SearchIcon className="text-black/40 absolute mt-2 ml-2 hover:text-white/70 w-4 h-4 " />
+              <SearchIcon className="text-black/40 absolute mt-2 ml-2  w-4 h-4 " />
               <motion.Input
-                className="w-48 focus:w-60  h-8 pl-8 rounded-full bg-white"
+                className="w-48 focus:w-60 transition-all  h-8 pl-8 rounded-full bg-white"
                 placeholder="Search..."
               />
             </div>

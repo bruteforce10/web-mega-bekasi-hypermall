@@ -24,7 +24,8 @@ const FacilitySection = () => {
   if (
     pathname === "/dashboard" ||
     pathname === "/dashboard/directory" ||
-    pathname === "/dashboard/promo"
+    pathname === "/dashboard/promo" ||
+    pathname === "/dashboard/article"
   ) {
     return null;
   }
