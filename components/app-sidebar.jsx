@@ -29,6 +29,10 @@ const items = [
     title: "Article",
     url: "/dashboard/article",
   },
+  {
+    title: "Event",
+    url: "/dashboard/event",
+  },
 ];
 
 export function AppSidebar() {

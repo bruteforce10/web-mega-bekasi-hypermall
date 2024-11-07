@@ -2,13 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const Card = ({ link, title, floor, alt, image }) => {
+const Card = ({ link, title, floor, image }) => {
   return (
     <Link href={link} className="group w-fit h-fit">
       <div className="relative group-hover:scale-[95%] transition-all duration-300 rounded-lg overflow-hidden w-fit h-fit">
         <Image
-          src={image}
-          alt={alt}
+          src={"http://localhost:3001/" + image}
+          alt={title}
           width={280}
           height={280}
           className="max-md:w-screen max-md:object-cover"

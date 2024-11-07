@@ -6,7 +6,7 @@ const RichEditor = ({ reff }) => {
     <BundledEditor
       onInit={(_evt, editor) => (reff.current = editor)}
       init={{
-        height: 200,
+        height: 600,
         menubar: false,
         plugins: [
           "advlist",

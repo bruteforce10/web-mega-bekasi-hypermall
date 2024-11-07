@@ -10,12 +10,12 @@ import Card from "../_component/Card";
 
 export default function EventPage() {
   return (
-    <main className="container mx-auto  lg:mt-12 mt-4">
+    <main className="container mx-auto max-w-[1000px]  lg:mt-12 mt-4">
       <BreadcrumbSection
         breadTwo="event"
         breadThree="Artfordable by Sidharta Auctioneer"
       />
-      <section className="flex md:flex-row flex-col gap-8 md:gap-12 mt-4">
+      <section className="flex  flex-col gap-8 md:gap-12 mt-4">
         <div className="space-y-4">
           <Image
             src="/dummy-promo.webp"
@@ -23,18 +23,15 @@ export default function EventPage() {
             width={1080}
             height={1080}
             quality={100}
-            className="w-full rounded-md object-cover "
+            className="w-full rounded-md object-cover max-h-[500px] "
           />
         </div>
         <div className="space-y-4 w-full">
-          <div className="flex items-center gap-4">
-            <LuCalendarHeart className="w-12 h-12" />
-            <div>
-              <h2 className="text-2xl uppercase font-bold">
-                01 Nov 2020 - 31 Aug 2021
-              </h2>
-              <p>From 11:00 AM to 10:00 PM</p>
-            </div>
+          <div className="flex items-center gap-2">
+            <LuCalendarHeart className="w-10 h-10" />
+            <h2 className="text-2xl uppercase font-bold">
+              01 Nov 2020 - 31 Aug 2021
+            </h2>
           </div>
           <Separator />
           <h1 className="h2">Artfordable by Sidharta Auctioneer</h1>
@@ -55,6 +52,9 @@ export default function EventPage() {
             <span className="text-lg text-black font-bold">Location : </span>{" "}
             Lv2 North Wing Area
           </p>
+          <Button variant="link" className="p-0 text-md text-black normal-case">
+            View on Instagram
+          </Button>
           <Share
             urlEmail={"https://www.google.com"}
             urlTwitter={"https://www.google.com"}
@@ -68,7 +68,7 @@ export default function EventPage() {
           Other Recommendations
         </h2>
         <div className="flex max-lg:flex-wrap justify-center gap-8">
-          {[...Array(4)].map((_, index) => (
+          {[...Array(2)].map((_, index) => (
             <Card
               key={index}
               image={"/dummy-opening-tenant.webp"}

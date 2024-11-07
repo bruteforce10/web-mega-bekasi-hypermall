@@ -3,11 +3,18 @@ import Image from "next/image";
 import TextTitle from "./TextTitle";
 import { categorys } from "@/lib/data";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import titleToSlug from "@/lib/slug";
+import { useEffect } from "react";
+import { fetchCategories } from "@/app/redux/directory/directorySlicer";
 
 const CategorySection = () => {
+  const dispatch = useDispatch();
   const { categories } = useSelector((state) => state.directory);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, []);
 
   return (
     <section className="px-2">
@@ -37,7 +44,7 @@ const CategorySection = () => {
       <div className="container mx-auto  gap-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6  mt-12">
         {categories.map((category, index) => (
           <Link
-            href={"#"}
+            href={`/directory?category=${category.name}`}
             key={index}
             className="relative mx-auto group overflow-hidden  rounded-2xl w-fit"
           >
@@ -49,7 +56,7 @@ const CategorySection = () => {
               className="group-hover:scale-110 transition-all duration-500"
             />
             <div className="absolute bottom-0 text-center left-0 right-0">
-              <h3 className="text-white relative top-20 text-xl font-medium group-hover:scale-90 transition-all duration-500">
+              <h3 className="text-white relative top-20 text-lg font-medium group-hover:scale-90 transition-all duration-500">
                 {category.name}
               </h3>
               <div className=" bg-gradient-to-b h-24 from-transparent to-black/70" />

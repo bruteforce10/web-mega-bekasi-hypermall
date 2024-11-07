@@ -47,44 +47,86 @@ import RichEditor from "@/components/RichEditor";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import titleToSlug from "@/lib/slug";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
-  title: z.string().min(2).max(50),
-  directory: z.string(),
-  location: z.string(),
-  category: z.string(),
-  startPromo: z.date(),
-  endPromo: z.date(),
+  title: z.string().min(2).max(50, {
+    message: "Title must be between 2 and 50 characters",
+  }),
+  description: z.string(),
+  newsOpening: z.boolean().default(false).optional(),
+  metaTitle: z.string().max(60, {
+    message: "Meta title must be less than 60 characters",
+  }),
+  metaDescription: z.string().max(155, {
+    message: "Meta description must be less than 155 characters",
+  }),
 });
 
 export default function PromoPage() {
   const dispatch = useDispatch();
+  const { isLoadingDirectory } = useSelector((state) => state.directory);
   const editorRef = useRef(null);
-  const { directories, isLoadingDirectory } = useSelector(
-    (state) => state.directory
-  );
   const [image, setImage] = useState(null);
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      directory: "",
-      location: "",
-      category: "",
-      startPromo: new Date(),
-      endPromo: new Date(),
-    },
-    reValidateMode: "onSubmit",
-  });
-
-  useEffect(() => {
-    dispatch(fetchDirectories());
-    console.log(directories);
-  }, []);
+  const [imageArticle, setImageArticle] = useState(null);
+  const [linkImage, setLinkImage] = useState(null);
 
   const onChangeImage = (event) => {
     const file = event.target.files[0];
     setImage(file);
+  };
+
+  const onChangeImageArticle = (event) => {
+    const file = event.target.files[0];
+    setImageArticle(file);
+  };
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      newsOpening: false,
+      description: "",
+      metaTitle: "",
+      metaDescription: "",
+    },
+    reValidateMode: "onSubmit",
+  });
+
+  const handleCopy = (e) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(linkImage);
+  };
+
+  const handleUploadImageNews = async (e) => {
+    e.preventDefault();
+
+    if (!imageArticle) return alert("Please select an image to upload.");
+    dispatch(setLoadingDirectory(true));
+    try {
+      const formData = new FormData();
+      formData.append("image", imageArticle);
+      formData.append("type", "news");
+
+      const uploadResponse = await fetch(
+        "http://localhost:3001/api/v1/cms/images",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!uploadResponse.ok) {
+        throw new Error(`Image upload failed: ${uploadResponse.statusText}`);
+      }
+      const uploadedImageData = await uploadResponse.json();
+      setLinkImage("http://localhost:3001/" + uploadedImageData?.data?.name);
+      dispatch(setLoadingDirectory(false));
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      dispatch(setLoadingDirectory(false));
+    }
   };
 
   async function onSubmit(values) {
@@ -106,7 +148,6 @@ export default function PromoPage() {
       }
 
       const uploadedImageData = await uploadResponse.json();
-      console.log(uploadedImageData);
 
       if (uploadedImageData) {
         const data = {
@@ -117,7 +158,7 @@ export default function PromoPage() {
         };
 
         const response = await fetch(
-          "http://localhost:3001/api/v1/cms/promos",
+          "http://localhost:3001/api/v1/cms/articles",
           {
             method: "POST",
             headers: {
@@ -128,10 +169,10 @@ export default function PromoPage() {
         );
 
         if (!response.ok) {
-          throw new Error(`Promo creation failed: ${response.statusText}`);
+          throw new Error(`Article creation failed: ${response.statusText}`);
         }
 
-        alert("Promo created successfully");
+        alert("Article created successfully");
         dispatch(setLoadingDirectory(false));
         editorRef.current?.setContent("");
         const imageForm = document.getElementById("pictureUpload");
@@ -147,240 +188,156 @@ export default function PromoPage() {
 
   return (
     <div className="container mx-auto ml-12 space-y-8 mt-12 pb-24">
+      <div>
+        <div className="space-y-4 ">
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="pictureUpload">Cover</Label>
+            <Input id="pictureUpload" type="file" onChange={onChangeImage} />
+          </div>
+        </div>
+
+        {image && (
+          <div className="space-y-4 mt-4">
+            <h3>Preview Gambar:</h3>
+            <Image
+              src={URL.createObjectURL(image)}
+              alt="Selected"
+              width={300}
+              height={300}
+            />
+            <p className="text-muted-foreground">
+              pastikan ukuran gambarnya persegi (1080x1080)
+            </p>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setImage(null);
+                const input = document.getElementById("pictureUpload");
+                input.value = "";
+              }}
+            >
+              Reset
+            </Button>
+          </div>
+        )}
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div>
-            <div className="space-y-4 ">
-              <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="pictureUpload">Cover</Label>
-                <Input
-                  id="pictureUpload"
-                  type="file"
-                  onChange={onChangeImage}
-                />
-              </div>
-            </div>
-
-            {image && (
-              <div className="space-y-4 mt-4">
-                <h3>Preview Gambar:</h3>
-                <Image
-                  src={URL.createObjectURL(image)}
-                  alt="Selected"
-                  width={300}
-                  height={300}
-                />
-                <p className="text-muted-foreground">
-                  pastikan ukuran gambarnya persegi (1080x1080)
-                </p>
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    setImage(null);
-                    const input = document.getElementById("pictureUpload");
-                    input.value = "";
-                  }}
-                >
-                  Reset
-                </Button>
-              </div>
-            )}
-          </div>
           <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title Promo</FormLabel>
+                <FormLabel>Title Article</FormLabel>
                 <FormControl>
-                  <Input placeholder="Promo title" {...field} />
+                  <Input placeholder="Article title" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
-            name="directory"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Directory</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className={cn(
-                          "justify-between",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value
-                          ? directories.find(
-                              (directory) => directory._id === field.value
-                            )?.title
-                          : "Select directory"}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search directory..." />
-                      <CommandList>
-                        <CommandEmpty>No directory found.</CommandEmpty>
-                        <CommandGroup>
-                          {directories.map((directory) => (
-                            <CommandItem
-                              value={directory.title}
-                              key={directory._id}
-                              onSelect={() => {
-                                form.setValue("directory", directory._id);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  directory.title === field.value
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {directory.title}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="location"
+            name="metaTitle"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Location Promo</FormLabel>
+                <FormLabel>Meta Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Location" {...field} />
+                  <Input placeholder="Meta Title" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
-            name="category"
+            name="metaDescription"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
+                <FormLabel>Meta Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Meta Description"
+                    className="resize-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="newsOpening"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                <FormControl>
+                  <Checkbox
+                    id="terms2"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <label
+                  htmlFor="terms2"
+                  className="text-sm  leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value={"dinning"}>Dinning</SelectItem>
-                    <SelectItem value={"shopping"}>Shopping</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
+                  Grand Opening News
+                </label>
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="startPromo"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Start Promo</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) => date < new Date()}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="endPromo"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>End Promo</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) => date < form.watch("startPromo")}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <RichEditor reff={editorRef} />
-          <Button type="submit" disabled={isLoadingDirectory}>
+
+          <div className="pt-12 space-y-6">
+            <h3 className="text-lg  font-medium">Add Article</h3>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <Input
+                  id="pictureUpload"
+                  value={imageArticle?.filename}
+                  type="file"
+                  onChange={onChangeImageArticle}
+                />
+                <Button variant="secondary" onClick={handleUploadImageNews}>
+                  {isLoadingDirectory ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    " Upload Image News"
+                  )}
+                </Button>
+              </div>
+              {linkImage && (
+                <div className="flex gap-4 items-center">
+                  <div className="px-12  py-1 border-2 w-fit border-dashed ">
+                    <span>{linkImage}</span>
+                    <Button
+                      onClick={handleCopy}
+                      variant="link"
+                      className="text-black"
+                    >
+                      Copy
+                    </Button>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      setLinkImage(null);
+                      setImageArticle(null);
+                    }}
+                  >
+                    Reset
+                  </Button>
+                </div>
+              )}
+            </div>
+            <RichEditor reff={editorRef} />
+          </div>
+          <Button type="submit">
             {isLoadingDirectory ? (
-              <>
-                <Loader2 className=" h-4 w-4 animate-spin" />
-                <span className="ml-2">Loading</span>
-              </>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               "Submit"
             )}

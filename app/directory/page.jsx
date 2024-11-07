@@ -1,14 +1,26 @@
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import React from "react";
-import { IoSearch } from "react-icons/io5";
 import SelectOps from "./_component/SelectOps";
 import { Button } from "@/components/ui/button";
 import Card from "./_component/Card";
 import { DirectoryOps } from "@/lib/data";
+import SearchInput from "./_component/SearchInput";
 
-export default function DirectoryPage() {
+const getData = async (key, floor, category) => {
+  const res = await fetch(
+    `http://localhost:3001/api/v1/cms/directory?title=${key}&floor=${floor}&category=${category}`,
+    {
+      cache: "no-store",
+    }
+  );
+  return res.json();
+};
+
+export default async function DirectoryPage({ searchParams }) {
   const { floor, categories } = DirectoryOps;
+  const { key, floorSearch, category } = await searchParams;
+  const { data } = await getData(key, floorSearch, category);
+
   return (
     <main>
       <Image
@@ -24,23 +36,20 @@ export default function DirectoryPage() {
           <h5 className="text-xl uppercase text-[#C82435] font-medium">
             search tenant
           </h5>
-          <div className="relative w-full">
-            <IoSearch className="absolute text-2xl left-2 top-[50%] opacity-70 translate-y-[-50%]" />
-            <Input placeholder="Filter By Keyword" className="pl-10 w-full" />
-          </div>
+
+          <SearchInput value={key} />
           <SelectOps data={floor} title="By Floor" />
           <SelectOps data={categories} title="All Category" />
           <Button className="w-full rounded-lg">Reset Filter</Button>
         </aside>
         <div className="w-full grid grid-cols-1  md:grid-cols-3 gap-4">
-          {[...Array(24)].map((_, index) => (
+          {data.map((item, index) => (
             <Card
               key={index}
               link="/directory/tenant/1"
-              title="Mall Bekasi"
-              floor="Ground 1, Level B2"
-              alt="mall-bekasi-hypermall"
-              image="/directory-dummy.webp"
+              title={item.title}
+              floor={item.location}
+              image={item.images[0].name}
             />
           ))}
         </div>
