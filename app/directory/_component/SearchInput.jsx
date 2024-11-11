@@ -19,8 +19,8 @@ const SearchInput = ({ value }) => {
           router.replace(
             `/directory?${new URLSearchParams({
               key: e.target.value,
-              category: params.get("category"),
-              floorSearch: params.get("floor"),
+              category: params.get("category") || "",
+              floorSearch: params.get("floorSearch") || "",
             })}`,
             { scroll: false }
           );

@@ -8,8 +8,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
+import { name } from "mustache";
 
-const SelectOps = ({ data, title }) => {
+const SelectOps = ({ data, title, name }) => {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -28,7 +29,7 @@ const SelectOps = ({ data, title }) => {
         `/directory?${new URLSearchParams({
           category: value,
           key: params.get("key") || "",
-          floorSearch: params.get("floor"),
+          floorSearch: params.get("floorSearch"),
         }).toString()}`,
         { scroll: false }
       );
@@ -38,7 +39,11 @@ const SelectOps = ({ data, title }) => {
   return (
     <Select
       onValueChange={handleChange}
-      value={params.get(title === "By Floor" ? "floor" : "category") || ""}
+      value={
+        name === "floor"
+          ? params.get("floorSearch") || ""
+          : params.get("category") || ""
+      }
     >
       <SelectTrigger className="w-full">
         <SelectValue placeholder={title} />

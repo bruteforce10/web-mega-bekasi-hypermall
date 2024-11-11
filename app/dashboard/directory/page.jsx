@@ -33,6 +33,7 @@ import {
 } from "@/app/redux/directory/directorySlicer";
 import RichEditor from "@/components/RichEditor";
 import { Loader2 } from "lucide-react";
+import { DirectoryOps } from "@/lib/data";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters").max(50),
@@ -44,6 +45,7 @@ const formSchema = z.object({
     .regex(/^@([a-zA-Z0-9_]{1,30})$/, "Instagram harus dalam format @username"),
   location: z.string().min(2).max(25),
   categories: z.string(),
+  floor: z.string(),
 });
 
 const DirectoryPage = () => {
@@ -60,6 +62,7 @@ const DirectoryPage = () => {
       instagram: "",
       location: "",
       categories: "",
+      floor: "",
     },
     reValidateMode: "onSubmit",
   });
@@ -306,6 +309,33 @@ const DirectoryPage = () => {
                     {categories?.map((item) => (
                       <SelectItem key={item?._id} value={item?._id}>
                         {item?.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="floor"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Floor</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a floor" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {DirectoryOps?.floor.map((item) => (
+                      <SelectItem key={item} value={item}>
+                        {item}
                       </SelectItem>
                     ))}
                   </SelectContent>
