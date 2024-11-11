@@ -6,8 +6,8 @@ import Card from "./_component/Card";
 import { DirectoryOps } from "@/lib/data";
 import SearchInput from "./_component/SearchInput";
 import LoadingSkeleton from "./_component/LoadingSkelton";
-import { set } from "zod";
 import Link from "next/link";
+import LoadMoreButton from "./_component/LoadMoreButton";
 
 const getData = async (key, floor, category) => {
   const res = await fetch(
@@ -16,15 +16,15 @@ const getData = async (key, floor, category) => {
       cache: "no-store",
     }
   );
-  return res.json();
+  const data = await res.json();
+  return data;
 };
 
 export default async function DirectoryPage({ searchParams }) {
   const { floor, categories } = DirectoryOps;
-  const { key, floorSearch, category } = await searchParams;
+  const { key, floorSearch, category, limit = 8 } = await searchParams;
   const { data } = await getData(key, floorSearch, category);
-
-  console.log(data);
+  const lengthData = data.length;
 
   return (
     <main>
@@ -42,31 +42,45 @@ export default async function DirectoryPage({ searchParams }) {
             <h5 className="text-xl uppercase text-[#C82435] font-medium">
               search tenant
             </h5>
-            <SearchInput value={key} />
-            <SelectOps data={floor} title="By Floor" name="floor" />
-            <SelectOps data={categories} title="All Category" name="category" />
+            <SearchInput value={key} limit={lengthData} />
+            <SelectOps
+              data={floor}
+              title="By Floor"
+              name="floor"
+              limit={lengthData}
+            />
+            <SelectOps
+              data={categories}
+              title="All Category"
+              name="category"
+              limit={lengthData}
+            />
             <Link
               href="/directory
             "
+              className="block"
             >
               <Button className="w-full rounded-lg">Reset Filter</Button>
             </Link>
           </aside>
-          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
-            {data.map((item, index) => (
-              <Card
-                key={index}
-                link="/directory/tenant/1"
-                title={item.title}
-                floor={item.location}
-                image={item.images[0].name}
-              />
-            ))}
-            {data.length === 0 && (
-              <p className="text-xl text-muted-foreground">
-                No Directory Found
-              </p>
-            )}
+          <div className="flex flex-col items-center">
+            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+              {data.slice(0, limit).map((item, index) => (
+                <Card
+                  key={index}
+                  link={`/directory/${item.slug}`}
+                  title={item.title}
+                  floor={item.location}
+                  image={item.images[0].name}
+                />
+              ))}
+              {data.length === 0 && (
+                <p className="text-xl text-muted-foreground">
+                  No Directory Found
+                </p>
+              )}
+            </div>
+            {lengthData > limit && <LoadMoreButton limit={limit} />}
           </div>
         </section>
       </Suspense>

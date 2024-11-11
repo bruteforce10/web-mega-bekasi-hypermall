@@ -8,19 +8,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
-import { name } from "mustache";
+import { useDebouncedCallback } from "use-debounce";
 
-const SelectOps = ({ data, title, name }) => {
+const SelectOps = ({ data, title, name, limit }) => {
   const router = useRouter();
   const params = useSearchParams();
 
-  const handleChange = (value) => {
+  const limitPage = params.get("limit") || limit;
+
+  const handleChange = useDebouncedCallback((value) => {
     if (title === "By Floor") {
       router.replace(
         `/directory?${new URLSearchParams({
           floorSearch: value,
           key: params.get("key") || "",
-          category: params.get("category"),
+          category: params.get("category") || "",
+          limit: limitPage,
         }).toString()}`,
         { scroll: false }
       );
@@ -29,12 +32,13 @@ const SelectOps = ({ data, title, name }) => {
         `/directory?${new URLSearchParams({
           category: value,
           key: params.get("key") || "",
-          floorSearch: params.get("floorSearch"),
+          floorSearch: params.get("floorSearch") || "",
+          limit: limitPage,
         }).toString()}`,
         { scroll: false }
       );
     }
-  };
+  }, 1000);
 
   return (
     <Select

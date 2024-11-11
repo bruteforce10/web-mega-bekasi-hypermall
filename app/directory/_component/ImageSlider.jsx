@@ -8,7 +8,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Navigation, EffectFade, Pagination } from "swiper/modules";
 
-const ImageSlider = () => {
+const ImageSlider = ({ images }) => {
   useEffect(() => {
     import("lightbox2/dist/css/lightbox.min.css");
     import("lightbox2/dist/js/lightbox-plus-jquery.min.js");
@@ -31,17 +31,17 @@ const ImageSlider = () => {
         modules={[Autoplay, EffectFade, Navigation, Pagination]}
         className="mySwiper"
       >
-        {[...Array(4)].map((_, index) => (
+        {images.map((item, index) => (
           <SwiperSlide key={index}>
             <a
-              href="/directory-dummy.webp"
+              href={`http://localhost:3001/${item?.name}`}
               data-lightbox="mygallery"
-              data-title="Image 1"
+              data-title={item?.name.slice(17)}
               className="relative"
             >
               <Image
-                src="/directory-dummy.webp"
-                alt="coupon"
+                src={`http://localhost:3001/${item?.name}`}
+                alt={item?.name.slice(17)}
                 width={500}
                 height={500}
                 className="rounded-md w-full h-full object-cover"

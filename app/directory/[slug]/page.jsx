@@ -5,50 +5,73 @@ import Share from "../_component/Share";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import InnerHTML from "dangerously-set-html-content";
 import { RiCoupon3Fill } from "react-icons/ri";
-import Card from "../_component/Card";
+import { IoCall } from "react-icons/io5";
+import { RiInstagramFill } from "react-icons/ri";
+import OtherRecomendation from "../_component/OtherRecomendation";
 
-export default function DetailPage() {
+const getData = async (slug) => {
+  const res = await fetch(
+    `http://localhost:3001/api/v1/cms/directory/${slug}`,
+    {
+      cache: "no-store",
+    }
+  );
+  const data = await res.json();
+
+  return data;
+};
+
+export default async function DetailPage({ params }) {
+  const { slug } = params;
+  const { data } = await getData(slug);
+  const { title, location, images, description, phone, instagram } = data;
+  console.log(data);
+
   return (
     <main className="container mx-auto  lg:mt-12 mt-4 ">
       <div className="flex max-lg:flex-col gap-12">
         <div className="lg:w-1/3 w-full ">
-          <ImageSlider />
+          <ImageSlider images={images} />
         </div>
         <div className="space-y-6">
           <TextTitle
-            subTitle={"Location East Mall, Level 3"}
-            title="Optik Seis"
+            subTitle={location}
+            title={title}
             className={"text-start mt-0"}
           />
           <div className="space-y-4">
-            <p className="leading-loose">
-              Welcome to your eyewear haven! Optik Seis is a one-stop fashion
-              eyewear center that has been catering to anyone who’s longing to
-              see better and be seen better. With an array of collection from
-              high-end brands; Cartier, Bvlgari, Chanel, Prada, Gucci, Bottega
-              Veneta, Dita, Victoria Beckham, Saint Laurent and more, our
-              professionally trained staff will make sure to help you find what
-              suits your needs and give a guaranteed of an accurate and correct
-              eye examination.
-            </p>
-            <Link href={"/"} className="block">
-              <Button variant="link" className="text-black p-0">
-                Visit Website
-              </Button>
-            </Link>
+            <InnerHTML html={description} />
+            <div className="flex gap-4">
+              <Link
+                href={`https://www.instagram.com/${instagram}`}
+                className="block"
+              >
+                <Button variant="outline" className="text-black">
+                  <RiInstagramFill className="inline mr-2" />
+                  Visit Instagram
+                </Button>
+              </Link>
+              <Link href={`tel:${phone}`} className="block">
+                <Button variant="outline" className="text-black">
+                  <IoCall className="inline mr-2" />
+                  {phone.replace(/(\d{4})(\d{4})(\d{3})/, "$1 $2 $3")}
+                </Button>
+              </Link>
+            </div>
           </div>
           <Separator />
           <div>
             <Share
-              urlEmail={"https://www.google.com"}
-              urlTwitter={"https://www.google.com"}
-              urlWhatsapp={"https://www.google.com"}
-              urlFacebook={"https://www.google.com"}
+              urlEmail={`http://localhost:3000/directory/${slug}`}
+              urlTwitter={`http://localhost:3000/directory/${slug}`}
+              urlWhatsapp={`http://localhost:3000/directory/${slug}`}
+              urlFacebook={`http://localhost:3000/directory/${slug}`}
             />
           </div>
           <Separator />
-          <div className="space-y-6">
+          {/* <div className="space-y-6">
             <h3 className="text-2xl font-bold">Get Offers 🔥</h3>
             <Link
               href={"/"}
@@ -57,26 +80,10 @@ export default function DetailPage() {
               <RiCoupon3Fill className="inline mr-2 mb-1" />
               Triple Dining Rewards
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
-      <div className="mt-[120px] space-y-12">
-        <h2 className="text-2xl font-bold text-center">
-          Other Recommendations
-        </h2>
-        <div className="w-full flex max-lg:flex-wrap justify-center gap-4">
-          {[...Array(4)].map((_, index) => (
-            <Card
-              key={index}
-              link="/directory/tenant/1"
-              title="Mall Bekasi"
-              floor="Ground 1, Level B2"
-              alt="mall-bekasi-hypermall"
-              image="/directory-dummy.webp"
-            />
-          ))}
-        </div>
-      </div>
+      <OtherRecomendation />
     </main>
   );
 }
