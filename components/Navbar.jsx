@@ -34,6 +34,17 @@ import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { Input } from "./ui/input";
 import { SearchIcon } from "lucide-react";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Button } from "./ui/button";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -61,7 +72,8 @@ const Navbar = () => {
     pathname === "/dashboard/directory" ||
     pathname === "/dashboard/promo" ||
     pathname === "/dashboard/article" ||
-    pathname === "/dashboard/event"
+    pathname === "/dashboard/event" ||
+    pathname === "/dashboard/directory/add"
   ) {
     return null;
   }
@@ -80,13 +92,32 @@ const Navbar = () => {
             <Link href="#">
               <FaTiktok className="text-white hover:text-white/70 text-2xl " />
             </Link>
-            <div layout className="w-full">
+            <div className="w-full max-sm:hidden">
               <SearchIcon className="text-black/40 absolute mt-2 ml-2  w-4 h-4 " />
-              <motion.Input
+              <Input
                 className="w-48 focus:w-60 transition-all  h-8 pl-8 rounded-full bg-white"
                 placeholder="Search..."
               />
             </div>
+
+            <Drawer>
+              <DrawerTrigger>
+                <SearchIcon className="text-white text-2xl sm:hidden " />
+              </DrawerTrigger>
+              <DrawerContent className="h-80">
+                <DrawerHeader className={"space-y-4"}>
+                  <DrawerTitle>Search Everything</DrawerTitle>
+                  <Input
+                    className="rounded-md bg-white"
+                    placeholder="Search..."
+                  />
+                  <Button>Search</Button>
+                  {/* <DrawerDescription>
+                    This action cannot be undone.
+                  </DrawerDescription> */}
+                </DrawerHeader>
+              </DrawerContent>
+            </Drawer>
           </div>
         </div>
       </div>
@@ -96,12 +127,18 @@ const Navbar = () => {
         transition={spring}
         className={clsx(
           "py-8 w-full    top-0  ",
-          isScrolled && "bg-white shadow-md z-10 sticky"
+          isScrolled && "bg-white shadow-md z-[99] sticky"
         )}
       >
         <div className="container flex justify-between  ">
           <Link href="/" legacyBehavior passHref>
-            <Image src="/logo.svg" alt="logo" width={80} height={80} />
+            <Image
+              src="/logo.svg"
+              alt="logo"
+              width={80}
+              height={80}
+              className="cursor-pointer"
+            />
           </Link>
           {/* Web Version Navbar */}
           <NavigationMenu className="max-md:hidden">

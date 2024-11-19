@@ -23,7 +23,6 @@ const SelectOps = ({ data, title, name, limit }) => {
           floorSearch: value,
           key: params.get("key") || "",
           category: params.get("category") || "",
-          limit: limitPage,
         }).toString()}`,
         { scroll: false }
       );
@@ -33,7 +32,6 @@ const SelectOps = ({ data, title, name, limit }) => {
           category: value,
           key: params.get("key") || "",
           floorSearch: params.get("floorSearch") || "",
-          limit: limitPage,
         }).toString()}`,
         { scroll: false }
       );

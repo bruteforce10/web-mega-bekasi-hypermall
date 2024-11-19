@@ -53,6 +53,7 @@ const formSchema = z.object({
   directory: z.string(),
   location: z.string(),
   category: z.string(),
+  linkPromo: z.string().optional(),
   startPromo: z.date(),
   endPromo: z.date(),
 });
@@ -71,6 +72,7 @@ export default function PromoPage() {
       directory: "",
       location: "",
       category: "",
+      linkPromo: "",
       startPromo: new Date(),
       endPromo: new Date(),
     },
@@ -292,6 +294,19 @@ export default function PromoPage() {
                     <SelectItem value={"shopping"}>Shopping</SelectItem>
                   </SelectContent>
                 </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="linkPromo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Link Promo</FormLabel>
+                <FormControl>
+                  <Input placeholder="link promo" {...field} />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

@@ -4,7 +4,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Card from "./_component/card";
 import { categoriesPromo } from "@/lib/data";
 
-const PromoPage = () => {
+const getData = async () => {
+  const res = await fetch(`http://localhost:3001/api/v1/cms/promos`, {
+    cache: "no-store",
+  });
+  const data = await res.json();
+  return data;
+};
+
+export default async function PromoPage() {
+  const { data } = await getData();
+  const filterShopping = data.filter((item) => item.category === "shopping");
+  const filterDinning = data.filter((item) => item.category === "dinning");
+
   return (
     <main>
       <Image
@@ -28,16 +40,49 @@ const PromoPage = () => {
             value="all"
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {[...Array(6)].map((_, index) => (
-              <Card key={index} />
+            {data.map((item, index) => (
+              <Card
+                key={index}
+                title={item.title}
+                image={item.image.name}
+                directory={item.directory.title}
+                location={item.location}
+                slug={item.slug}
+              />
             ))}
           </TabsContent>
-          <TabsContent value="dinning">not found</TabsContent>
-          <TabsContent value="shopping">not found</TabsContent>
+          <TabsContent
+            value="dinning"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {filterDinning.map((item, index) => (
+              <Card
+                key={index}
+                title={item.title}
+                image={item.image.name}
+                directory={item.directory.title}
+                location={item.location}
+                slug={item.slug}
+              />
+            ))}
+          </TabsContent>
+          <TabsContent
+            value="shopping"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {filterShopping.map((item, index) => (
+              <Card
+                key={index}
+                title={item.title}
+                image={item.image.name}
+                directory={item.directory.title}
+                location={item.location}
+                slug={item.slug}
+              />
+            ))}
+          </TabsContent>
         </Tabs>
       </section>
     </main>
   );
-};
-
-export default PromoPage;
+}

@@ -26,13 +26,13 @@ const Footer = () => {
   const pathname = usePathname();
   const { address, socialMedia, visitInformation, mbhConnect, contactUs } =
     footerData;
-
   if (
     pathname === "/dashboard" ||
     pathname === "/dashboard/directory" ||
     pathname === "/dashboard/promo" ||
     pathname === "/dashboard/article" ||
-    pathname === "/dashboard/event"
+    pathname === "/dashboard/event" ||
+    pathname === "/dashboard/directory/add"
   ) {
     return null;
   }

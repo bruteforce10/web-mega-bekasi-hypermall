@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React from "react";
 
-export default function page() {
+export default async function ArticlePage() {
   return (
     <main className="container mx-auto flex-col flex items-center max-w-[800px]  lg:mt-12 mt-4">
       <BreadcrumbSection

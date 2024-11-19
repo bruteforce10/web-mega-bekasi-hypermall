@@ -6,16 +6,28 @@ import BreadcrumbSection from "../_component/BreadcrumbSection";
 import { LuCalendarHeart } from "react-icons/lu";
 import { Separator } from "@/components/ui/separator";
 import Share from "@/app/directory/_component/Share";
-import Card from "../_component/Card";
+import InnerHTML from "dangerously-set-html-content";
+import moment from "moment";
+import OtherRecomendation from "../_component/OtherRecomendation";
 
-export default function PromoDetailPage() {
+const getData = async (slug) => {
+  const res = await fetch(`http://localhost:3001/api/v1/cms/promos/${slug}`, {
+    cache: "no-cache",
+  });
+  return res.json();
+};
+
+export default async function PromoDetailPage({ params }) {
+  const { slug } = await params;
+  const { data } = await getData(slug);
+
   return (
     <main className="container mx-auto  lg:mt-12 mt-4">
-      <BreadcrumbSection breadTwo="promo" breadThree="Triple Dining Rewards" />
+      <BreadcrumbSection breadTwo="promo" breadThree={data.title} />
       <section className="flex md:flex-row flex-col gap-8 md:gap-12 mt-4">
-        <div className="space-y-4">
+        <div className="space-y-4 md:w-1/2">
           <Image
-            src="/dummy-promo.webp"
+            src={`http://localhost:3001/${data.image.name}`}
             alt="megabekasi-hypermall"
             width={1080}
             height={1080}
@@ -23,65 +35,51 @@ export default function PromoDetailPage() {
             className="w-full rounded-md object-cover "
           />
           <div className="space-y-2 max-md:hidden">
-            <h3 className="text-2xl font-bold">
-              Gokana Ramen & Teppan Express
-            </h3>
-            <p className="text-muted-foreground">
-              Location : Available on Level 6
-            </p>
-            <Link href="/promo" className="block">
-              <Button variant="link" size="sm" className="text-black p-0 ">
-                more detail
-              </Button>
-            </Link>
+            <h3 className="text-2xl font-bold">{data.directory.title}</h3>
+            <p className="text-muted-foreground">Location : {data.location}</p>
+            {data.linkPromo && (
+              <Link href={data.linkPromo} className="block">
+                <Button variant="link" size="sm" className="text-black p-0 ">
+                  more detail
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
         <div className="space-y-4 w-full">
           <div className="flex items-center gap-4">
             <LuCalendarHeart className="w-12 h-12" />
             <h2 className="text-2xl uppercase font-bold">
-              01 Nov 2020 - 31 Aug 2021
+              {moment(data.startPromo).format("DD MMM YYYY")} -{" "}
+              {moment(data.endPromo).format("DD MMM YYYY")}
             </h2>
           </div>
           <Separator />
-          <h1 className="h2">Triple Dining Rewards</h1>
-          <p className="text-muted-foreground leading-loose pt-4">
-            Makan hemat banyak pilihan dengan promo SUPER MANTAP dari Gokana.
-            Mulai dari 40 ribuan aja, kamu udah bisa makan enak dengan 3 pilihan
-            menu best seller dari GOKANA dan lengkap dengan minumnya juga!
-            Dijamin bikin perut kenyang, dompet tenang. Yuk ke outlet GOKANA
-            terdekat dan serbu promonya ya! *Syarat & ketentuan berlaku: Periode
-            promo: 16 September - 31 Oktober 2024. Harga belum termasuk pajak.
-            Berlaku kelipatan maks. 3 dalam 1 transaksi. Promo berlaku untuk
-            dine in, take away, delivery. Promo tidak dapat dibayar dengan
-            voucher.
-          </p>
+          <h1 className="h2">{data.title}</h1>
+          <article className="prose">
+            <InnerHTML html={data.description} />
+          </article>
           <div className="space-y-2 md:hidden">
             <p className="text-muted-foreground">
               Location : Available on Level 6
             </p>
-            <Link href="/promo" className="block">
-              <Button variant="link" size="sm" className="text-black p-0 ">
-                more detail
-              </Button>
-            </Link>
+            {data.linkPromo && (
+              <Link href={data.linkPromo} className="block">
+                <Button variant="link" size="sm" className="text-black p-0 ">
+                  more detail
+                </Button>
+              </Link>
+            )}
           </div>
           <Share
-            urlEmail={"https://www.google.com"}
-            urlTwitter={"https://www.google.com"}
-            urlWhatsapp={"https://www.google.com"}
-            urlFacebook={"https://www.google.com"}
+            urlEmail={`http://localhost:3000/${data.slug}`}
+            urlTwitter={`http://localhost:3000/${data.slug}`}
+            urlWhatsapp={`http://localhost:3000/${data.slug}`}
+            urlFacebook={`http://localhost:3000/${data.slug}`}
           />
         </div>
       </section>
-      <div className="mt-[120px] space-y-8">
-        <h2 className="text-2xl font-bold text-center">You may also like</h2>
-        <div className="flex max-lg:flex-wrap justify-center gap-8">
-          {[...Array(4)].map((_, index) => (
-            <Card key={index} />
-          ))}
-        </div>
-      </div>
+      <OtherRecomendation id={data._id} />
     </main>
   );
 }

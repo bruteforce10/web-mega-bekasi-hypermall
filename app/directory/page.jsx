@@ -80,7 +80,9 @@ export default async function DirectoryPage({ searchParams }) {
                 </p>
               )}
             </div>
-            {lengthData > limit && <LoadMoreButton limit={limit} />}
+            {lengthData > limit && !category && !floorSearch && (
+              <LoadMoreButton limit={limit} />
+            )}
           </div>
         </section>
       </Suspense>

@@ -3,8 +3,26 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React from "react";
 import Card from "./_component/Card";
+import moment from "moment";
 
-const EventPage = () => {
+const getData = async () => {
+  const res = await fetch(`http://localhost:3001/api/v1/cms/events`, {
+    cache: "no-store",
+  });
+  const data = await res.json();
+  return data;
+};
+
+export default async function EventPage() {
+  const { data } = await getData();
+  const HeadlineNewsData = data.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  )[0];
+  const filterData = data.filter((item) => item._id !== HeadlineNewsData._id);
+
+  console.log(HeadlineNewsData);
+  console.log(filterData);
+
   return (
     <main>
       <Image
@@ -15,36 +33,41 @@ const EventPage = () => {
         quality={100}
         className="h-full min-h-[120px] object-cover w-full"
       />
-      <section className="container mx-auto mt-12 space-y-8 lg:space-y-12">
-        <div className="relative ">
-          <div className="bg-gradient-to-b absolute rounded-2xl z-[-1] bottom-0 h-[140px]  w-full  from-transparent to-black/70" />
+      <section className="container max-w-[1000px] mx-auto mt-12 space-y-8 lg:space-y-12">
+        <div className="rounded-xl overflow-hidden">
           <Image
-            src={"/dummy-opening-tenant.webp"}
+            src={`http://localhost:3001/${HeadlineNewsData?.image?.name}`}
             alt="megabekasi-hypermall"
             width={600}
-            className="object-cover w-full rounded-2xl h-[530px]"
+            className="object-cover w-full  "
             height={600}
+            quality={97}
           />
-          <div className="absolute px-6  sm:left-8 sm:px-4 text-white bottom-8">
-            <p className="text-lg uppercase text-medium mb-2 tracking-wider">
+          <div className="p-6 bg-[#F1F5F9] space-y-4  ">
+            <p className="text-lg uppercase text-medium  tracking-wider">
               HAPPENING NOW
             </p>
-            <h2 className="h2">Sawadikap – Thailand Culinary Festival</h2>
-            <p className="font-thin">03 Oct 2024</p>
-            <Button variant="link" className="p-0 block">
+            <div>
+              <h2 className="h2">Sawadikap – Thailand Culinary Festival</h2>
+              <p className="font-thin">
+                {moment(HeadlineNewsData.createdAt).format("DD MMM YYYY")}
+              </p>
+            </div>
+            <Button variant="link" className="p-0 block text-black">
               lean more
             </Button>
           </div>
         </div>
+
         <div className="space-y-6">
-          <TextTitle title={"Throwback Moments"} className={"text-start"} />
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            {filterData.map((item, index) => (
               <Card
                 key={index}
-                image={"/dummy-opening-tenant.webp"}
-                title={"Sawadikap – Thailand Culinary Festival"}
-                date={"03 Oct 2024"}
+                image={`http://localhost:3001/${item?.image?.name}`}
+                title={item.title}
+                slug={item.slug}
+                date={moment(item.createdAt).format("DD MMM YYYY")}
               />
             ))}
           </div>
@@ -52,6 +75,4 @@ const EventPage = () => {
       </section>
     </main>
   );
-};
-
-export default EventPage;
+}

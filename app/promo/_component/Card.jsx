@@ -1,24 +1,29 @@
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
-const Card = () => {
+const Card = ({ title, image, directory, location, slug }) => {
   return (
-    <div className="space-y-2">
-      <Image
-        src={"/dummy-promo.webp"}
-        alt="megabekasi-hypermall"
-        width={300}
-        height={300}
-        quality={100}
-        className="md:w-[300px] w-full md:h-[300px] object-cover rounded-lg"
-      />
+    <Link href={`/promo/${slug}`} className="block">
       <div className="space-y-2">
-        <Badge>Teh Kotjok</Badge>
-        <h4 className="text-xl font-bold">Beli 1 Gratis Varial All Large 1</h4>
-        <p>Location: Lt. 2</p>
+        <Image
+          src={`http://localhost:3001/${image}`}
+          alt="megabekasi-hypermall"
+          width={300}
+          height={300}
+          quality={100}
+          className="md:w-[300px] w-full md:h-[300px] object-cover rounded-lg"
+        />
+        <div className="space-y-2">
+          <Badge>{directory}</Badge>
+
+          <h4 className="text-xl font-bold hover:underline">{title}</h4>
+
+          <p>{location}</p>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
