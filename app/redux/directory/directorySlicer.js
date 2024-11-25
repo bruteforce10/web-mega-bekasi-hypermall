@@ -7,6 +7,8 @@ const initialState = {
   isLoadingEvents: false,
   events: [],
   directories: [],
+  promos: [],
+  isLoadingPromos: false,
   isLoadingDirectory: false,
 };
 
@@ -27,14 +29,19 @@ export const fetchDirectories = createAsyncThunk(
       "http://localhost:3001/api/v1/cms/directory",
       {
         headers: {
-          "Cache-Control": "no-cache",
           Pragma: "no-cache",
+          "Cache-Control": "no-cache",
         },
       }
     );
     return response?.data?.data;
   }
 );
+
+export const fetchPromo = createAsyncThunk("directory/fetchPromo", async () => {
+  const response = await axios.get("http://localhost:3001/api/v1/cms/promos");
+  return response?.data?.data;
+});
 
 export const fetchEvents = createAsyncThunk(
   "directory/fetchEvents",
@@ -88,6 +95,19 @@ const directorySlice = createSlice({
       })
       .addCase(fetchDirectories.rejected, (state) => {
         state.isLoadingDirectory = false;
+      });
+
+    // Fetch Promo Cases
+    builder
+      .addCase(fetchPromo.pending, (state) => {
+        state.isLoadingPromos = true;
+      })
+      .addCase(fetchPromo.fulfilled, (state, action) => {
+        state.isLoadingPromos = false;
+        state.promos = action.payload;
+      })
+      .addCase(fetchPromo.rejected, (state) => {
+        state.isLoadingPromos = false;
       });
   },
 });

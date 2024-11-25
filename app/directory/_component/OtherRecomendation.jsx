@@ -12,7 +12,9 @@ const OtherRecomendation = ({ categories, id }) => {
   useEffect(() => {
     dispatch(fetchDirectories());
     const filterDirectory = directories
-      .filter((item) => item._id !== id && item.categories === categories)
+      .filter(
+        (item) => item._id !== id && item.categories._id === categories._id
+      )
       .sort(() => Math.random() - 0.5);
     setDataDirectory(filterDirectory);
   }, []);
@@ -28,7 +30,7 @@ const OtherRecomendation = ({ categories, id }) => {
             title={item.title}
             floor={item.location}
             alt={item.title}
-            image={item.images[0].name}
+            image={item.images.images[0].name}
           />
         ))}
       </div>

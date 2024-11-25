@@ -71,7 +71,7 @@ export default async function DirectoryPage({ searchParams }) {
                   link={`/directory/${item.slug}`}
                   title={item.title}
                   floor={item.location}
-                  image={item.images[0].name}
+                  image={item.images.images[0].name}
                 />
               ))}
               {data.length === 0 && (

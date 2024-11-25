@@ -56,7 +56,7 @@ export default async function DetailPage({ params }) {
       <div className="flex max-lg:flex-col gap-12">
         <div className="lg:w-1/3 w-full space-y-4 ">
           <BreadcrumbSection breadTwo="directory" breadThree={title} />
-          <ImageSlider images={images} />
+          <ImageSlider images={images.images} />
         </div>
         <div className="space-y-6">
           <TextTitle

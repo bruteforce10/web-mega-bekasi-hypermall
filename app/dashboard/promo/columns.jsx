@@ -19,7 +19,7 @@ import {
 import Link from "next/link";
 
 const deleteDirectory = async (id) => {
-  const res = await fetch(`http://localhost:3001/api/v1/cms/directory/${id}`, {
+  const res = await fetch(`http://localhost:3001/api/v1/cms/promos/${id}`, {
     method: "DELETE",
   });
   if (res.ok) {
@@ -54,12 +54,12 @@ export const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "images",
+    accessorKey: "image",
     header: () => <div className="text-right">Images</div>,
     cell: ({ row }) => {
       return (
         <Image
-          src={`http://localhost:3001/${row?.original?.images?.images[0]?.name}`}
+          src={`http://localhost:3001/${row?.original?.image?.name}`}
           alt=""
           width={150}
           height={150}
@@ -68,39 +68,58 @@ export const columns = [
     },
   },
   {
-    accessorKey: "createdAt",
+    accessorKey: "title",
+    header: "Name",
+  },
+  {
+    accessorKey: "directory",
+    header: "Directory",
+    cell: ({ row }) => {
+      return (
+        <div className="max-w-[150px]">{row.original.directory.title}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "startPromo",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date
+          Start Promo
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
       return (
-        <div className="text-right font-medium">
+        <div className="text-center">
           {moment(row.original.createdAt).format("DD MMM YYYY")}
         </div>
       );
     },
   },
   {
-    accessorKey: "title",
-    header: "Name",
-  },
-  {
-    accessorKey: "phone",
-    header: "Phone",
-  },
-  {
-    accessorKey: "categories",
-    header: "Category",
+    accessorKey: "endPromo",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          End Promo
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
-      return <div className="font-medium">{row.original.categories.name}</div>;
+      return (
+        <div className="text-center">
+          {moment(row.original.createdAt).format("DD MMM YYYY")}
+        </div>
+      );
     },
   },
   {
@@ -108,7 +127,7 @@ export const columns = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-4">
-          <Link href={`/dashboard/directory/${row.original.slug}`}>
+          <Link href={`/dashboard/promo/${row.original.slug}`}>
             <Button variant="ghost" size="sm">
               Edit
             </Button>

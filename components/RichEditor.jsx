@@ -1,10 +1,11 @@
 import React from "react";
 import BundledEditor from "./BundledEditor";
 
-const RichEditor = ({ reff }) => {
+const RichEditor = ({ reff, value }) => {
   return (
     <BundledEditor
       onInit={(_evt, editor) => (reff.current = editor)}
+      initialValue={value}
       init={{
         height: 600,
         menubar: false,

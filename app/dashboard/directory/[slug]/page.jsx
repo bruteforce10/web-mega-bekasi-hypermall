@@ -29,12 +29,13 @@ import titleToSlug from "@/lib/slug";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCategories,
+  fetchDirectories,
   setLoadingDirectory,
 } from "@/app/redux/directory/directorySlicer";
 import RichEditor from "@/components/RichEditor";
 import { Loader2 } from "lucide-react";
 import { DirectoryOps } from "@/lib/data";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters").max(50),
@@ -49,41 +50,50 @@ const formSchema = z.object({
   floor: z.string(),
 });
 
-const AddDirectory = () => {
+export default function EditDirectory() {
+  const { slug } = useParams();
   const router = useRouter();
   const editorRef = useRef(null);
   const [image, setImage] = useState("");
   const [descriptionText, setDescriptionText] = useState("");
   const [coverId, setCoverId] = useState("");
   const [imageData, setImageData] = useState(null);
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      phone: "",
-      instagram: "",
-      location: "",
-      categories: "",
-      floor: "",
-    },
-    reValidateMode: "onSubmit",
-  });
-  const { categories, isLoadingDirectory } = useSelector(
+  const { categories, isLoadingDirectory, directories } = useSelector(
     (state) => state.directory
   );
   const dispatch = useDispatch();
+  const directory = directories.find((directory) => directory.slug === slug);
+
+  useEffect(() => {
+    dispatch(fetchDirectories());
+    if (directory) {
+      getDataImage(directory?._id);
+    }
+  }, []);
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: directory?.title || "",
+      phone: directory?.phone || "",
+      instagram: directory?.instagram || "",
+      location: directory?.location || "",
+      categories: directory?.categories._id || "",
+      floor: directory?.floor || "",
+    },
+    reValidateMode: "onSubmit",
+  });
 
   const getDataImage = async (id) => {
     const res = await axios.get(
       `http://localhost:3001/api/v1/cms/cover-directorys/${id}`
     );
     setImageData(res?.data?.data);
-    setDescriptionText(res?.data?.data?.title);
+    setCoverId(res?.data?.data?._id);
   };
 
   async function onSubmit(values) {
     dispatch(setLoadingDirectory(true));
-
     if (!imageData) {
       alert("Please add an image");
       dispatch(setLoadingDirectory(false));
@@ -97,13 +107,16 @@ const AddDirectory = () => {
       slug: titleToSlug(values.title),
     };
 
-    const response = await fetch("http://localhost:3001/api/v1/cms/directory", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `http://localhost:3001/api/v1/cms/directory/${directory?._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
     if (!response.ok) {
       alert("Failed to create cover directory");
@@ -111,22 +124,16 @@ const AddDirectory = () => {
       return;
     }
 
-    window.localStorage.removeItem("coverId");
     form.reset();
     dispatch(setLoadingDirectory(false));
-    alert("Cover directory created successfully");
+    dispatch(fetchDirectories());
     router.push("/dashboard/directory");
   }
 
   useEffect(() => {
-    const coverIdFromLocalStorage = window.localStorage.getItem("coverId");
-    if (coverIdFromLocalStorage) {
-      setCoverId(coverIdFromLocalStorage);
-      getDataImage(coverIdFromLocalStorage);
-    }
+    getDataImage(directory?.images?._id);
 
     dispatch(fetchCategories());
-    dispatch(setLoadingDirectory(false));
   }, [image]);
 
   const onChangeImage = (event) => {
@@ -136,13 +143,6 @@ const AddDirectory = () => {
 
   const handleSubmitImage = async () => {
     dispatch(setLoadingDirectory(true));
-
-    if (!descriptionText) {
-      alert("Please add a description");
-      dispatch(setLoadingDirectory(false));
-      return;
-    }
-
     try {
       const formData = new FormData();
       formData.append("image", image);
@@ -187,7 +187,6 @@ const AddDirectory = () => {
         if (coverData) {
           setImage("");
           const inputUpload = document.getElementById("pictureUpload");
-          window.localStorage.setItem("coverId", coverData?.data._id);
           setCoverId(coverData?.data._id);
 
           inputUpload.value = "";
@@ -217,7 +216,7 @@ const AddDirectory = () => {
               <Input
                 type="text"
                 placeholder="deskripsi gambar"
-                value={descriptionText}
+                value={imageData?.title ? imageData?.title : descriptionText}
                 onChange={(e) => setDescriptionText(e.target.value)}
                 disabled={coverId}
               />
@@ -356,7 +355,7 @@ const AddDirectory = () => {
             )}
           />
 
-          <RichEditor reff={editorRef} />
+          <RichEditor reff={editorRef} value={directory?.description} />
           <Button type="submit" disabled={isLoadingDirectory}>
             {isLoadingDirectory ? (
               <>
@@ -371,6 +370,4 @@ const AddDirectory = () => {
       </Form>
     </div>
   );
-};
-
-export default AddDirectory;
+}

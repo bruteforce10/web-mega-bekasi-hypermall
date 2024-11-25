@@ -32,7 +32,11 @@ const Footer = () => {
     pathname === "/dashboard/promo" ||
     pathname === "/dashboard/article" ||
     pathname === "/dashboard/event" ||
-    pathname === "/dashboard/directory/add"
+    pathname === "/dashboard/directory/add" ||
+    pathname === "/dashboard/directory/" ||
+    pathname.startsWith("/dashboard/directory/") ||
+    pathname === "/dashboard/promo/add" ||
+    pathname.startsWith("/dashboard/promo/")
   ) {
     return null;
   }
