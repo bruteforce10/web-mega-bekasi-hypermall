@@ -31,7 +31,11 @@ const FacilitySection = () => {
     pathname === "/dashboard/directory/" ||
     pathname.startsWith("/dashboard/directory/") ||
     pathname === "/dashboard/promo/add" ||
-    pathname.startsWith("/dashboard/promo/")
+    pathname === "/dashboard/event/add" ||
+    pathname.startsWith("/dashboard/event/") ||
+    pathname.startsWith("/dashboard/promo/") ||
+    pathname === "/dashboard/article/add" ||
+    pathname.startsWith("/dashboard/article/")
   ) {
     return null;
   }

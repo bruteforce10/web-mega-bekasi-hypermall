@@ -42,55 +42,44 @@ import {
 } from "@/app/redux/directory/directorySlicer";
 import { CalendarIcon, Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import RichEditor from "@/components/RichEditor";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import titleToSlug from "@/lib/slug";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   title: z.string().min(2).max(50),
-  directory: z.string(),
   location: z.string(),
-  category: z.string(),
   linkInstagram: z.string().optional(),
-  startPromo: z.date(),
-  endPromo: z.date(),
+  startEvent: z.date(),
+  endEvent: z.date(),
 });
 
-export default function PromoPageEdit() {
-  const dispatch = useDispatch();
-  const { slug } = useParams();
+export default function EventPage() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const editorRef = useRef(null);
-  const { directories, isLoadingDirectory, promos } = useSelector(
+  const { directories, isLoadingDirectory } = useSelector(
     (state) => state.directory
   );
-  const promo = promos.find((promo) => promo.slug === slug);
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(null);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: promo?.title || "",
-      directory: promo?.directory?._id || "",
-      location: promo?.location || "",
-      category: promo?.category || "",
-      linkInstagram: promo?.linkInstagram || "",
-      startPromo: new Date(promo?.startPromo) || new Date(),
-      endPromo: new Date(promo?.endPromo) || new Date(),
+      title: "",
+      location: "",
+      linkInstagram: "",
+      startEvent: new Date(),
+      endEvent: new Date(),
     },
     reValidateMode: "onSubmit",
   });
 
-  const imageSrc = image
-    ? URL.createObjectURL(image)
-    : promo?.image
-    ? `http://localhost:3001/${promo.image.name}`
-    : null;
-
   useEffect(() => {
     dispatch(fetchDirectories());
+    console.log(directories);
   }, []);
 
   const onChangeImage = (event) => {
@@ -100,96 +89,61 @@ export default function PromoPageEdit() {
 
   async function onSubmit(values) {
     dispatch(setLoadingDirectory(true));
-
     try {
-      const imageId = await handleImageUpload(promo?.image?._id);
+      const formData = new FormData();
+      formData.append("image", image);
 
-      const data = {
-        ...values,
-        image: imageId,
-        description: editorRef.current?.getContent(),
-        slug: titleToSlug(values.title),
-      };
+      const uploadResponse = await fetch(
+        "http://localhost:3001/api/v1/cms/images",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-      await updatePromo(promo._id, data);
+      if (!uploadResponse.ok) {
+        throw new Error(`Image upload failed: ${uploadResponse.statusText}`);
+      }
 
-      alert("Promo updated successfully");
-      resetForm();
-      router.push("/dashboard/promo");
+      const uploadedImageData = await uploadResponse.json();
+
+      if (uploadedImageData) {
+        const data = {
+          ...values,
+          image: uploadedImageData?.data?._id,
+          description: editorRef.current.getContent(),
+          slug: titleToSlug(values.title),
+        };
+
+        const response = await fetch(
+          "http://localhost:3001/api/v1/cms/events",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        );
+
+        if (!response.ok) {
+          alert("Event Nama sudah ada");
+          throw new Error(`Event creation failed: ${response.statusText}`);
+        }
+
+        alert("Event created successfully");
+        dispatch(setLoadingDirectory(false));
+        editorRef.current?.setContent("");
+        const imageForm = document.getElementById("pictureUpload");
+        imageForm.value = "";
+        setImage(null);
+        form.reset();
+        router.push("/dashboard/event");
+      }
     } catch (error) {
-      console.error("Error submitting promo:", error);
-    } finally {
+      console.log(error);
       dispatch(setLoadingDirectory(false));
     }
-  }
-
-  async function handleImageUpload(existingImageId) {
-    if (!image) return existingImageId;
-
-    if (image) {
-      await deleteImage(existingImageId);
-    }
-
-    return await uploadImage();
-  }
-
-  // Helper function to delete an image
-  async function deleteImage(imageId) {
-    const response = await fetch(
-      `http://localhost:3001/api/v1/cms/images/${imageId}`,
-      {
-        method: "DELETE",
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Image deletion failed: ${response.statusText}`);
-    }
-  }
-
-  // Helper function to upload a new image
-  async function uploadImage() {
-    const formData = new FormData();
-    formData.append("image", image);
-
-    const response = await fetch("http://localhost:3001/api/v1/cms/images", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Image upload failed: ${response.statusText}`);
-    }
-
-    const { data } = await response.json();
-    return data?._id;
-  }
-
-  // Helper function to update promo
-  async function updatePromo(promoId, data) {
-    const response = await fetch(
-      `http://localhost:3001/api/v1/cms/promos/${promoId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Promo update failed: ${response.statusText}`);
-    }
-  }
-
-  // Helper function to reset the form
-  function resetForm() {
-    editorRef.current?.setContent("");
-    const imageForm = document.getElementById("pictureUpload");
-    imageForm.value = "";
-    setImage(null);
-    form.reset();
   }
 
   return (
@@ -208,15 +162,19 @@ export default function PromoPageEdit() {
               </div>
             </div>
 
-            {imageSrc && (
+            {image && (
               <div className="space-y-4 mt-4">
                 <h3>Preview Gambar:</h3>
-                <Image src={imageSrc} alt="Preview" width={300} height={300} />
+                <Image
+                  src={URL.createObjectURL(image)}
+                  alt="Selected"
+                  width={300}
+                  height={300}
+                />
                 <p className="text-muted-foreground">
                   pastikan ukuran gambarnya persegi (1080x1080)
                 </p>
                 <Button
-                  type="button"
                   variant="destructive"
                   onClick={() => {
                     setImage(null);
@@ -234,70 +192,10 @@ export default function PromoPageEdit() {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title Promo</FormLabel>
+                <FormLabel>Title Event</FormLabel>
                 <FormControl>
-                  <Input placeholder="Promo title" {...field} />
+                  <Input placeholder="Event title" {...field} />
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="directory"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Directory</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className={cn(
-                          "justify-between",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value
-                          ? directories.find(
-                              (directory) => directory._id === field.value
-                            )?.title
-                          : "Select directory"}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search directory..." />
-                      <CommandList>
-                        <CommandEmpty>No directory found.</CommandEmpty>
-                        <CommandGroup>
-                          {directories.map((directory) => (
-                            <CommandItem
-                              value={directory.title}
-                              key={directory._id}
-                              onSelect={() => {
-                                form.setValue("directory", directory._id);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  directory.title === field.value
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {directory.title}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
                 <FormMessage />
               </FormItem>
             )}
@@ -307,7 +205,7 @@ export default function PromoPageEdit() {
             name="location"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Location Promo</FormLabel>
+                <FormLabel>Location Event</FormLabel>
                 <FormControl>
                   <Input placeholder="Location" {...field} />
                 </FormControl>
@@ -317,36 +215,12 @@ export default function PromoPageEdit() {
           />
           <FormField
             control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value={"dinning"}>Dinning</SelectItem>
-                    <SelectItem value={"shopping"}>Shopping</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name="linkInstagram"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Link Promo (Instagram)</FormLabel>
+                <FormLabel>Link Instagram</FormLabel>
                 <FormControl>
-                  <Input placeholder="link promo" {...field} />
+                  <Input placeholder="Link Instagram" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -354,10 +228,10 @@ export default function PromoPageEdit() {
           />
           <FormField
             control={form.control}
-            name="startPromo"
+            name="startEvent"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Start Promo</FormLabel>
+                <FormLabel>Start Event</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -393,10 +267,10 @@ export default function PromoPageEdit() {
           />
           <FormField
             control={form.control}
-            name="endPromo"
+            name="endEvent"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>End Promo</FormLabel>
+                <FormLabel>End Event</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -430,7 +304,7 @@ export default function PromoPageEdit() {
               </FormItem>
             )}
           />
-          <RichEditor reff={editorRef} value={promo?.description} />
+          <RichEditor reff={editorRef} />
           <Button type="submit" disabled={isLoadingDirectory}>
             {isLoadingDirectory ? (
               <>

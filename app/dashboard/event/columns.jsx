@@ -18,15 +18,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 
-const deleteDirectory = async (id) => {
-  const res = await fetch(`http://localhost:3001/api/v1/cms/promos/${id}`, {
+const deleteEvent = async (id) => {
+  const res = await fetch(`http://localhost:3001/api/v1/cms/events/${id}`, {
     method: "DELETE",
   });
   if (res.ok) {
-    alert("Directory deleted successfully");
+    alert("Event deleted successfully");
     window.location.reload();
   } else {
-    alert("Failed to delete directory");
+    alert("Failed to delete event");
   }
 };
 
@@ -72,23 +72,14 @@ export const columns = [
     header: "Name",
   },
   {
-    accessorKey: "directory",
-    header: "Directory",
-    cell: ({ row }) => {
-      return (
-        <div className="max-w-[150px]">{row.original.directory.title}</div>
-      );
-    },
-  },
-  {
-    accessorKey: "startPromo",
+    accessorKey: "startEvent",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Start Promo
+          Start Event
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -96,20 +87,20 @@ export const columns = [
     cell: ({ row }) => {
       return (
         <div className="text-center">
-          {moment(row.original.startPromo).format("DD MMM YYYY")}
+          {moment(row.original.startEvent).format("DD MMM YYYY")}
         </div>
       );
     },
   },
   {
-    accessorKey: "endPromo",
+    accessorKey: "endEvent",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          End Promo
+          End Event
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -117,7 +108,7 @@ export const columns = [
     cell: ({ row }) => {
       return (
         <div className="text-center">
-          {moment(row.original.endPromo).format("DD MMM YYYY")}
+          {moment(row.original.endEvent).format("DD MMM YYYY")}
         </div>
       );
     },
@@ -127,7 +118,7 @@ export const columns = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-4">
-          <Link href={`/dashboard/promo/${row.original.slug}`}>
+          <Link href={`/dashboard/event/${row.original.slug}`}>
             <Button variant="ghost" size="sm">
               Edit
             </Button>
@@ -147,7 +138,7 @@ export const columns = [
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() => deleteDirectory(row.original._id)}
+                  onClick={() => deleteEvent(row.original._id)}
                 >
                   Continue
                 </AlertDialogAction>

@@ -6,10 +6,13 @@ const initialState = {
   isLoadingCategories: false,
   isLoadingEvents: false,
   events: [],
+  articles: [],
   directories: [],
   promos: [],
+  isLoadingArticles: false,
   isLoadingPromos: false,
   isLoadingDirectory: false,
+  isLoadingArticles: false,
 };
 
 export const fetchCategories = createAsyncThunk(
@@ -33,6 +36,16 @@ export const fetchDirectories = createAsyncThunk(
           "Cache-Control": "no-cache",
         },
       }
+    );
+    return response?.data?.data;
+  }
+);
+
+export const fetchArticles = createAsyncThunk(
+  "directory/fetchArticles",
+  async () => {
+    const response = await axios.get(
+      "http://localhost:3001/api/v1/cms/articles"
     );
     return response?.data?.data;
   }
@@ -108,6 +121,19 @@ const directorySlice = createSlice({
       })
       .addCase(fetchPromo.rejected, (state) => {
         state.isLoadingPromos = false;
+      });
+
+    // Fetch Articles Cases
+    builder
+      .addCase(fetchArticles.pending, (state) => {
+        state.isLoadingArticles = true;
+      })
+      .addCase(fetchArticles.fulfilled, (state, action) => {
+        state.isLoadingArticles = false;
+        state.articles = action.payload;
+      })
+      .addCase(fetchArticles.rejected, (state) => {
+        state.isLoadingArticles = false;
       });
   },
 });

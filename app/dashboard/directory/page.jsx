@@ -16,6 +16,7 @@ export default function DirectoryPage() {
 
   return (
     <div className="ml-12  mt-12 pb-24 space-y-8">
+      <h3 className="text-md tracking-widest uppercase">Dashboard Directory</h3>
       <DataTable
         hrefAddData="/dashboard/directory/add"
         columns={columns}

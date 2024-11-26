@@ -18,15 +18,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 
-const deleteDirectory = async (id) => {
-  const res = await fetch(`http://localhost:3001/api/v1/cms/promos/${id}`, {
+const deleteArticle = async (id) => {
+  const res = await fetch(`http://localhost:3001/api/v1/cms/articles/${id}`, {
     method: "DELETE",
   });
   if (res.ok) {
-    alert("Directory deleted successfully");
+    alert("Event deleted successfully");
     window.location.reload();
   } else {
-    alert("Failed to delete directory");
+    alert("Failed to delete event");
   }
 };
 
@@ -54,6 +54,27 @@ export const columns = [
     enableHiding: false,
   },
   {
+    accessorKey: "createdAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <div className="text-center">
+          {moment(row.original.createdAt).format("DD MMM YYYY")}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "image",
     header: () => <div className="text-right">Images</div>,
     cell: ({ row }) => {
@@ -72,62 +93,15 @@ export const columns = [
     header: "Name",
   },
   {
-    accessorKey: "directory",
-    header: "Directory",
-    cell: ({ row }) => {
-      return (
-        <div className="max-w-[150px]">{row.original.directory.title}</div>
-      );
-    },
-  },
-  {
-    accessorKey: "startPromo",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Start Promo
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      return (
-        <div className="text-center">
-          {moment(row.original.startPromo).format("DD MMM YYYY")}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "endPromo",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          End Promo
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      return (
-        <div className="text-center">
-          {moment(row.original.endPromo).format("DD MMM YYYY")}
-        </div>
-      );
-    },
+    accessorKey: "newsOpening",
+    header: "News Opening",
   },
   {
     id: "actions",
     cell: ({ row }) => {
       return (
         <div className="flex gap-4">
-          <Link href={`/dashboard/promo/${row.original.slug}`}>
+          <Link href={`/dashboard/article/${row.original.slug}`}>
             <Button variant="ghost" size="sm">
               Edit
             </Button>
@@ -147,7 +121,7 @@ export const columns = [
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() => deleteDirectory(row.original._id)}
+                  onClick={() => deleteArticle(row.original._id)}
                 >
                   Continue
                 </AlertDialogAction>
