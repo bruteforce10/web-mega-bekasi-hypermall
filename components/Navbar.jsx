@@ -36,10 +36,7 @@ import { Input } from "./ui/input";
 import { SearchIcon } from "lucide-react";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -67,22 +64,7 @@ const Navbar = () => {
     };
   }, []);
 
-  if (
-    pathname === "/dashboard" ||
-    pathname === "/dashboard/directory" ||
-    pathname === "/dashboard/promo" ||
-    pathname === "/dashboard/article" ||
-    pathname === "/dashboard/event" ||
-    pathname === "/dashboard/directory/add" ||
-    pathname === "/dashboard/directory/" ||
-    pathname.startsWith("/dashboard/directory/") ||
-    pathname === "/dashboard/promo/add" ||
-    pathname === "/dashboard/event/add" ||
-    pathname.startsWith("/dashboard/event/") ||
-    pathname.startsWith("/dashboard/promo/") ||
-    pathname === "/dashboard/article/add" ||
-    pathname.startsWith("/dashboard/article/")
-  ) {
+  if (pathname.startsWith("/dashboard/")) {
     return null;
   }
 
@@ -120,9 +102,6 @@ const Navbar = () => {
                     placeholder="Search..."
                   />
                   <Button>Search</Button>
-                  {/* <DrawerDescription>
-                    This action cannot be undone.
-                  </DrawerDescription> */}
                 </DrawerHeader>
               </DrawerContent>
             </Drawer>

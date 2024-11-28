@@ -10,8 +10,10 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Navigation } from "swiper/modules";
 import { FaArrowAltCircleLeft, FaArrowAltCircleRight } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const CouponSection = () => {
+  const { promos } = useSelector((state) => state.directory);
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   return (
@@ -80,24 +82,22 @@ const CouponSection = () => {
             }}
             className="mySwiper"
           >
-            {[...Array(8)].map((_, index) => (
+            {promos.map((promo, index) => (
               <SwiperSlide key={index}>
-                <Link href={"/"} className="mx-auto">
+                <Link href={promo?.slug} className="mx-auto">
                   <Image
-                    src="/dummy.png"
+                    src={`http://localhost:3001/${promo?.image?.name}`}
                     alt="coupon"
                     width={500}
                     height={500}
                   />
                   <div>
                     <Button className="mt-4 bg-[#FFC89F]/20 rounded-full">
-                      Xiaomi
+                      {promo?.directory?.title}
                     </Button>
                     <div className="mt-4 spacey-4 text-white ">
-                      <h4 className="text-2xl font-medium">
-                        Diskon Gila Redmi 13
-                      </h4>
-                      <p>Location: Lt. 3</p>
+                      <h4 className="text-2xl font-medium">{promo?.title}</h4>
+                      <p>Location: {promo?.location}</p>
                     </div>
                   </div>
                 </Link>

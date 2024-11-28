@@ -12,7 +12,6 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,7 +32,6 @@ import {
 } from "@/app/redux/directory/directorySlicer";
 import RichEditor from "@/components/RichEditor";
 import { Loader2 } from "lucide-react";
-import { DirectoryOps } from "@/lib/data";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({

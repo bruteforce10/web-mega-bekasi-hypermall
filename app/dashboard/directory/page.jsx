@@ -12,6 +12,7 @@ export default function DirectoryPage() {
 
   useEffect(() => {
     dispatch(fetchDirectories());
+    console.log(directories);
   }, []);
 
   return (

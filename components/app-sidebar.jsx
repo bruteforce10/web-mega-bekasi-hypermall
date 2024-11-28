@@ -18,6 +18,10 @@ const items = [
     url: "/",
   },
   {
+    title: "Jumbotron",
+    url: "/dashboard/jumbotron",
+  },
+  {
     title: "Directory",
     url: "/dashboard/directory",
   },

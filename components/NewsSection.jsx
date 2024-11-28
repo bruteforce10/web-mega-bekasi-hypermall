@@ -7,8 +7,12 @@ import "swiper/css/effect-fade";
 import { Pagination, EffectFade } from "swiper/modules";
 import Image from "next/image";
 import Link from "next/link";
+import { useSelector } from "react-redux";
 
 const NewsSection = () => {
+  const { articles } = useSelector((state) => state.directory);
+  const filterArticles = articles.filter((item) => item.newsOpening !== true);
+
   return (
     <section className="mt-12 md:mt-24 container mx-auto ">
       <Swiper
@@ -19,9 +23,9 @@ const NewsSection = () => {
         modules={[Pagination, EffectFade]}
         className="mySwiper"
       >
-        {[...Array(4)].map((_, index) => (
+        {filterArticles.map((article, index) => (
           <SwiperSlide key={index}>
-            <div className="flex max-md:flex-col-reverse gap-8 sm:gap-12 px-2 md:pb-8 lg:pb-0">
+            <div className="flex max-md:flex-col-reverse justify-between gap-8 sm:gap-12 px-2 md:pb-8 lg:pb-0">
               <div className="space-y-4 max-md:pb-12">
                 <div className="space-y-3">
                   <h4 className="lg:text-xl text-lg font-medium">ARTICLES</h4>
@@ -31,19 +35,15 @@ const NewsSection = () => {
                   href="#"
                   className="lg:text-2xl text-xl block hover:underline uppercase font-bold"
                 >
-                  Menyambut Musim Liburan, Sweet Icescape 2024 Bersiap Kembali
-                  Meriahkan Liburanmu!
+                  {article?.title}
                 </Link>
                 <p className="max-lg:text-sm text-muted-foreground leading-loose">
-                  Bertualang menuju alam semesta yang menakjubkan. Serunya lagi,
-                  bisa Menyambut musim liburan sekolah tahun ini, Summarecon
-                  Mall Kelapa Gading kembali menghadirkan Sweet Icescape bulan
-                  Juni 2024!{" "}
+                  {article?.metaDescription}
                 </p>
               </div>
 
               <Image
-                src={"/dummy-news.webp"}
+                src={`http://localhost:3001/${article?.image?.name}`}
                 width={400}
                 height={400}
                 alt="news-1"

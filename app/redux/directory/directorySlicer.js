@@ -9,11 +9,23 @@ const initialState = {
   articles: [],
   directories: [],
   promos: [],
+  imagesJumbotron: [],
+  isLoadingImagesJumbotron: false,
   isLoadingArticles: false,
   isLoadingPromos: false,
   isLoadingDirectory: false,
   isLoadingArticles: false,
 };
+
+export const fetchImagesJumbotron = createAsyncThunk(
+  "directory/fetchImagesJumbotron",
+  async () => {
+    const response = await axios.get(
+      "http://localhost:3001/api/v1/cms/jumbotron"
+    );
+    return response?.data?.data?.images;
+  }
+);
 
 export const fetchCategories = createAsyncThunk(
   "directory/fetchCategories",
@@ -70,6 +82,9 @@ const directorySlice = createSlice({
   reducers: {
     setLoadingDirectory: (state, action) => {
       state.isLoadingDirectory = action.payload;
+    },
+    setJumbotronImages: (state, action) => {
+      state.imagesJumbotron = [...state.imagesJumbotron, action.payload];
     },
   },
   extraReducers: (builder) => {
@@ -135,9 +150,23 @@ const directorySlice = createSlice({
       .addCase(fetchArticles.rejected, (state) => {
         state.isLoadingArticles = false;
       });
+
+    // Fetch Images Jumbotron Cases
+    builder
+      .addCase(fetchImagesJumbotron.pending, (state) => {
+        state.isLoadingImagesJumbotron = true;
+      })
+      .addCase(fetchImagesJumbotron.fulfilled, (state, action) => {
+        state.isLoadingImagesJumbotron = false;
+        state.imagesJumbotron = action.payload;
+      })
+      .addCase(fetchImagesJumbotron.rejected, (state) => {
+        state.isLoadingImagesJumbotron = false;
+      });
   },
 });
 
-export const { setLoadingDirectory } = directorySlice.actions;
+export const { setLoadingDirectory, setJumbotronImages } =
+  directorySlice.actions;
 
 export default directorySlice.reducer;

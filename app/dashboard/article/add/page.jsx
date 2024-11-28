@@ -49,6 +49,7 @@ import Image from "next/image";
 import titleToSlug from "@/lib/slug";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   title: z.string().min(2).max(50, {
@@ -65,6 +66,7 @@ const formSchema = z.object({
 });
 
 export default function AddArticle() {
+  const router = useRouter();
   const dispatch = useDispatch();
   const { isLoadingDirectory } = useSelector((state) => state.directory);
   const editorRef = useRef(null);
@@ -179,6 +181,7 @@ export default function AddArticle() {
         imageForm.value = "";
         setImage(null);
         form.reset();
+        router.push("/dashboard/article");
       }
     } catch (error) {
       console.log(error);

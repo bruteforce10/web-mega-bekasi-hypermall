@@ -17,7 +17,7 @@ export default function ArticlePage() {
     <div className="ml-12  mt-12 pb-24 space-y-8">
       <h3 className="text-md tracking-widest uppercase">Dashboard Article</h3>
       <DataTable
-        hrefAddData="/dashboard/event/add"
+        hrefAddData="/dashboard/article/add"
         columns={columns}
         data={articles}
       />

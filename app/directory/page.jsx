@@ -8,6 +8,7 @@ import SearchInput from "./_component/SearchInput";
 import LoadingSkeleton from "./_component/LoadingSkelton";
 import Link from "next/link";
 import LoadMoreButton from "./_component/LoadMoreButton";
+import LoadingComponent from "@/components/LoadingComponent";
 
 const getData = async (key, floor, category) => {
   const res = await fetch(
