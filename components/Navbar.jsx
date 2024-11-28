@@ -113,7 +113,7 @@ const Navbar = () => {
         layout
         transition={spring}
         className={clsx(
-          "py-8 w-full    top-0  ",
+          "py-4 w-full    top-0  ",
           isScrolled && "bg-white shadow-md z-[99] sticky"
         )}
       >

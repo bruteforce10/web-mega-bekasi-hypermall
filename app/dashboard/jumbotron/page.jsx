@@ -1,4 +1,5 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import {
   closestCorners,
   DndContext,
@@ -8,51 +9,66 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import React, { useEffect } from "react";
-import Column from "./_component/Column";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import Column from "./_component/Column";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchImagesJumbotron,
-  setJumbotronImages,
-} from "@/app/redux/directory/directorySlicer";
 
 const JumbotronPage = () => {
-  const [task, setTask] = React.useState([
-    {
-      id: 1,
-      title: "Task 1",
-    },
-    {
-      id: 2,
-      title: "Task 2",
-    },
-  ]);
-  const [image, setImage] = React.useState(null);
-  const { imagesJumbotron } = useSelector((state) => state.directory);
-  const dispatch = useDispatch();
+  const [imagesJumbotron, setImagesJumbotron] = useState([]);
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchImagesJumbotron());
-    console.log(imagesJumbotron);
-  }, [dispatch]);
+    const fetchImages = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3001/api/v1/cms/jumbotron"
+        );
+        const data = await response.json();
+        setImagesJumbotron(data?.data?.images || []);
+      } catch (error) {
+        console.error("Failed to fetch images:", error);
+      }
+    };
 
-  const getTaskPos = (id) => task.findIndex((item) => item.id === id);
+    fetchImages();
+  }, []);
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = async (event) => {
     const { active, over } = event;
 
-    if (active.id === over.id) return;
-    setTask((task) => {
-      const originalPos = getTaskPos(active.id);
-      const newPos = getTaskPos(over.id);
+    if (!over || active.id === over.id) return;
 
-      return arrayMove(task, originalPos, newPos);
-    });
+    const originalPos = imagesJumbotron.findIndex(
+      (item) => item._id === active.id
+    );
+    const newPos = imagesJumbotron.findIndex((item) => item._id === over.id);
+
+    const updatedImages = arrayMove(imagesJumbotron, originalPos, newPos);
+    setImagesJumbotron(updatedImages);
+
+    try {
+      const response = await fetch(
+        "http://localhost:3001/api/v1/cms/jumbotron",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ images: updatedImages.map((img) => img._id) }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to update order: ${response.statusText}`);
+      }
+
+      console.log("Order updated successfully");
+    } catch (error) {
+      console.error("Failed to update order:", error);
+    }
   };
 
   const onChangeImage = (event) => {
@@ -73,59 +89,65 @@ const JumbotronPage = () => {
         }
       );
 
-      if (!uploadResponse.ok) {
-        throw new Error(`Image upload failed: ${uploadResponse.statusText}`);
-      }
-
+      if (!uploadResponse.ok)
+        throw new Error(`Upload failed: ${uploadResponse.statusText}`);
       const uploadedImageData = await uploadResponse.json();
 
-      if (uploadedImageData) {
-        // Tambahkan ID gambar baru ke Redux state
-        dispatch(setJumbotronImages(uploadedImageData?.data?._id));
+      const newImage = {
+        _id: uploadedImageData?.data?._id,
+        name: uploadedImageData?.data?.name,
+      };
 
-        // Update jumbotron dengan array yang diperbarui
-        const responseJumbotron = await fetch(
-          "http://localhost:3001/api/v1/cms/jumbotron",
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              images: [...imagesJumbotron, uploadedImageData?.data?._id], // Tambahkan ID baru
-            }),
-          }
-        );
-
-        if (!responseJumbotron.ok) {
-          throw new Error(
-            `Image upload failed: ${responseJumbotron.statusText}`
-          );
+      const responseJumbotron = await fetch(
+        "http://localhost:3001/api/v1/cms/jumbotron",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ images: [...imagesJumbotron, newImage] }),
         }
-        alert("Image uploaded successfully");
-        setImage(null);
-        const input = document.getElementById("pictureUpload");
-        input.value = "";
-      }
+      );
+
+      if (!responseJumbotron.ok)
+        throw new Error(`Update failed: ${responseJumbotron.statusText}`);
+
+      setImagesJumbotron((prev) => [...prev, newImage]);
+      setImage(null);
+      alert("Image uploaded successfully");
     } catch (error) {
-      console.log(error);
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const filteredImages = imagesJumbotron.filter((img) => img._id !== id);
+    setImagesJumbotron(filteredImages);
+
+    const responseJumbotron = await fetch(
+      "http://localhost:3001/api/v1/cms/jumbotron",
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ images: filteredImages }),
+      }
+    );
+
+    if (responseJumbotron.ok) {
+      alert("Image deleted successfully");
     }
   };
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(TouchSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
   return (
-    <main className="ml-12  mt-12 pb-24 space-y-8">
+    <main className="ml-12 mt-12 pb-24 space-y-8">
       <h3 className="text-md tracking-widest uppercase">Dashboard Jumbotron</h3>
 
       <div>
-        <div className="space-y-4 ">
+        <div className="space-y-4">
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="pictureUpload" className="text-muted-foreground">
               Add Jumbotron
@@ -133,6 +155,7 @@ const JumbotronPage = () => {
             <Input id="pictureUpload" type="file" onChange={onChangeImage} />
           </div>
         </div>
+
         {image && (
           <div className="space-y-4 mt-4">
             <h3>Preview Gambar:</h3>
@@ -143,15 +166,14 @@ const JumbotronPage = () => {
               height={300}
             />
             <p className="text-muted-foreground">
-              pastikan ukuran gambarnya persegi (1080x1080)
+              Pastikan ukuran gambarnya persegi (1080x1080)
             </p>
             <div className="space-x-4">
               <Button
                 variant="destructive"
                 onClick={() => {
                   setImage(null);
-                  const input = document.getElementById("pictureUpload");
-                  input.value = "";
+                  document.getElementById("pictureUpload").value = "";
                 }}
               >
                 Reset
@@ -169,7 +191,7 @@ const JumbotronPage = () => {
         onDragEnd={handleDragEnd}
         collisionDetection={closestCorners}
       >
-        <Column tasks={task} />
+        <Column images={imagesJumbotron} onDelete={handleDelete} />
       </DndContext>
     </main>
   );

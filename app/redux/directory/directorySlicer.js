@@ -84,7 +84,7 @@ const directorySlice = createSlice({
       state.isLoadingDirectory = action.payload;
     },
     setJumbotronImages: (state, action) => {
-      state.imagesJumbotron = [...state.imagesJumbotron, action.payload];
+      state.imagesJumbotron = action.payload;
     },
   },
   extraReducers: (builder) => {

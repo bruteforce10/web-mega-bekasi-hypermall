@@ -4,6 +4,8 @@ import * as React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchImagesJumbotron } from "@/app/redux/directory/directorySlicer";
 
 function SampleNextArrow(props) {
   const { className, style, onClick } = props;
@@ -38,6 +40,12 @@ function SamplePrevArrow(props) {
 }
 
 const Header = () => {
+  const { imagesJumbotron } = useSelector((state) => state.directory);
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    dispatch(fetchImagesJumbotron());
+  }, []);
   const settings = {
     dots: true,
     fade: true,
@@ -45,7 +53,7 @@ const Header = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 9900,
+    autoplaySpeed: 3000,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
   };
@@ -54,14 +62,17 @@ const Header = () => {
     <section>
       <div className="slider-container">
         <Slider {...settings}>
-          <Image
-            src={"/cover/1.webp"}
-            height="3000"
-            width="3000"
-            className="w-full object-cover  object-center"
-            alt="gambar"
-            priority
-          />
+          {imagesJumbotron.map((image) => (
+            <Image
+              key={image?._id}
+              src={`http://localhost:3001/${image?.name}`}
+              height="3000"
+              width="3000"
+              className="w-full object-cover object-center"
+              alt="gambar"
+              priority
+            />
+          ))}
         </Slider>
       </div>
     </section>
