@@ -68,7 +68,7 @@ const Header = () => {
               src={`http://localhost:3001/${image?.name}`}
               height="3000"
               width="3000"
-              className="w-full object-cover object-center"
+              className="w-full object-cover  object-center"
               alt="gambar"
               priority
             />

@@ -243,6 +243,9 @@ export default function EditArticle() {
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="pictureUpload">Cover</Label>
             <Input id="pictureUpload" type="file" onChange={onChangeImage} />
+            <p className="text-sm text-muted-foreground">
+              ukuran gambar harus 16:9 rasionya atau persegi panjang
+            </p>
           </div>
         </div>
 

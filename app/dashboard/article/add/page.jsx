@@ -60,7 +60,7 @@ const formSchema = z.object({
   metaTitle: z.string().max(60, {
     message: "Meta title must be less than 60 characters",
   }),
-  metaDescription: z.string().max(155, {
+  metaDescription: z.string().max(355, {
     message: "Meta description must be less than 155 characters",
   }),
 });
@@ -196,6 +196,9 @@ export default function AddArticle() {
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="pictureUpload">Cover</Label>
             <Input id="pictureUpload" type="file" onChange={onChangeImage} />
+            <p className="text-sm text-muted-foreground">
+              ukuran gambar harus 16:9 rasionya atau persegi panjang
+            </p>
           </div>
         </div>
 
@@ -208,9 +211,7 @@ export default function AddArticle() {
               width={300}
               height={300}
             />
-            <p className="text-muted-foreground">
-              pastikan ukuran gambarnya persegi (1080x1080)
-            </p>
+
             <Button
               variant="destructive"
               onClick={() => {

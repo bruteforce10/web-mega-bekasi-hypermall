@@ -37,8 +37,8 @@ export default async function PromoDetailPage({ params }) {
           <div className="space-y-2 max-md:hidden">
             <h3 className="text-2xl font-bold">{data.directory.title}</h3>
             <p className="text-muted-foreground">Location : {data.location}</p>
-            {data.linkPromo && (
-              <Link href={data.linkPromo} className="block">
+            {data.linkInstagram && (
+              <Link href={data.linkInstagram} className="block">
                 <Button variant="link" size="sm" className="text-black p-0 ">
                   more detail
                 </Button>

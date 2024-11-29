@@ -33,15 +33,14 @@ import {
 import RichEditor from "@/components/RichEditor";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { DirectoryOps } from "@/lib/data";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters").max(50),
   phone: z
     .string()
     .regex(/^(\+62|62|0)[0-9]{9,15}$/, "Nomor telepon harus dalam format 62"),
-  instagram: z
-    .string()
-    .regex(/^@([a-zA-Z0-9_]{1,30})$/, "Instagram harus dalam format @username"),
+  instagram: z.string(),
   location: z.string().min(2).max(25),
   categories: z.string(),
   floor: z.string(),
@@ -206,6 +205,9 @@ const AddDirectory = () => {
             <div className="grid w-full max-w-sm items-center gap-1.5">
               <Label htmlFor="pictureUpload">Cover</Label>
               <Input id="pictureUpload" type="file" onChange={onChangeImage} />
+              <p className="text-sm text-muted-foreground">
+                ukuran gambar harus 16:9 rasionya atau persegi panjang
+              </p>
             </div>
           </div>
 
@@ -280,7 +282,7 @@ const AddDirectory = () => {
               <FormItem>
                 <FormLabel>Instagram Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. @tenant" {...field} />
+                  <Input placeholder="e.g. tenant" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

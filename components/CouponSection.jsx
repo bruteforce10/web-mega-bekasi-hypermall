@@ -84,12 +84,13 @@ const CouponSection = () => {
           >
             {promos.map((promo, index) => (
               <SwiperSlide key={index}>
-                <Link href={promo?.slug} className="mx-auto">
+                <Link href={`/promo/${promo?.slug}`} className="mx-auto">
                   <Image
                     src={`http://localhost:3001/${promo?.image?.name}`}
                     alt="coupon"
                     width={500}
                     height={500}
+                    className="aspect-square object-cover object-center rounded-lg"
                   />
                   <div>
                     <Button className="mt-4 bg-[#FFC89F]/20 rounded-full">

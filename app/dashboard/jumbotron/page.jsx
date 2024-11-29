@@ -166,7 +166,7 @@ const JumbotronPage = () => {
               height={300}
             />
             <p className="text-muted-foreground">
-              Pastikan ukuran gambarnya persegi (1080x1080)
+              Pastikan ukuran gambarnya persegi (1600 x 960) px
             </p>
             <div className="space-x-4">
               <Button

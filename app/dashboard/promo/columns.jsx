@@ -76,7 +76,7 @@ export const columns = [
     header: "Directory",
     cell: ({ row }) => {
       return (
-        <div className="max-w-[150px]">{row.original.directory.title}</div>
+        <div className="max-w-[150px]">{row?.original?.directory?.title}</div>
       );
     },
   },
