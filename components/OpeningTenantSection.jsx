@@ -8,8 +8,8 @@ import Link from "next/link";
 
 const OpeningTenantSection = () => {
   const { articles } = useSelector((state) => state.directory);
-  const filteredAndSorted = articles
-    .filter((item) => item.newsOpening === true)
+  const filteredAndSorted = articles?.data
+    ?.filter((item) => item.newsOpening === true)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (

@@ -22,11 +22,10 @@ const getData = async (slug) => {
 export default async function EventPage({ params }) {
   const { slug } = await params;
   const { data } = await getData(slug);
-  console.log(data);
 
   return (
     <main className="container mx-auto max-w-[1000px]  lg:mt-12 mt-4">
-      <BreadcrumbSection breadTwo="event" breadThree={data.title} />
+      <BreadcrumbSection breadTwo="event" breadThree={data?.title} />
       <section className="flex  flex-col gap-8 md:gap-12 mt-4">
         <div className="space-y-4">
           <Image
@@ -42,20 +41,20 @@ export default async function EventPage({ params }) {
           <div className="flex items-center gap-2">
             <LuCalendarHeart className="w-10 h-10" />
             <h2 className="text-2xl uppercase font-bold">
-              {moment(data.startEvent).format("DD MMMM YYYY")} -{" "}
-              {moment(data.endEvent).format("DD MMMM YYYY")}
+              {moment(data?.startEvent).format("DD MMMM YYYY")} -{" "}
+              {moment(data?.endEvent).format("DD MMMM YYYY")}
             </h2>
           </div>
           <Separator />
-          <h1 className="h2">{data.title}</h1>
+          <h1 className="h2">{data?.title}</h1>
           <article className="prose">
-            <InnerHTML html={data.description} />
+            <InnerHTML html={data?.description} />
           </article>
           <p className="text-muted-foreground">
             <span className="text-lg text-black font-bold">Location : </span>{" "}
-            {data.location}
+            {data?.location}
           </p>
-          <Link href={data.linkInstagram} target="_blank">
+          <Link href={data?.linkInstagram} target="_blank">
             <Button
               variant="link"
               className="p-0 text-md text-black normal-case"
@@ -64,14 +63,14 @@ export default async function EventPage({ params }) {
             </Button>
           </Link>
           <Share
-            urlEmail={`localhost:3000/event/${data.slug}`}
-            urlTwitter={`localhost:3000/event/${data.slug}`}
-            urlWhatsapp={`localhost:3000/event/${data.slug}`}
-            urlFacebook={`localhost:3000/event/${data.slug}`}
+            urlEmail={`localhost:3000/event/${data?.slug}`}
+            urlTwitter={`localhost:3000/event/${data?.slug}`}
+            urlWhatsapp={`localhost:3000/event/${data?.slug}`}
+            urlFacebook={`localhost:3000/event/${data?.slug}`}
           />
         </div>
       </section>
-      <OtherRecomendation />
+      <OtherRecomendation slug={slug} />
     </main>
   );
 }

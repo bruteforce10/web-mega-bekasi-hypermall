@@ -1,61 +1,63 @@
 import Share from "@/app/directory/_component/Share";
-import Card from "@/app/event/_component/Card";
 import BreadcrumbSection from "@/app/promo/_component/BreadcrumbSection";
 import { Button } from "@/components/ui/button";
+import moment from "moment";
 import Image from "next/image";
 import React from "react";
+import InnerHTML from "dangerously-set-html-content";
+import OtherRecommendation from "../_component/OtherRecommendation";
 
-export default async function ArticlePage() {
+const getData = async (params) => {
+  const res = await fetch(
+    `http://localhost:3001/api/v1/cms/articles/${params}`,
+    {
+      cache: "no-store",
+    }
+  );
+  const data = await res.json();
+  return data;
+};
+
+export default async function ArticlePage({ params }) {
+  const { slug } = await params;
+  const { data } = await getData(slug);
+  const { title, description, createdAt, image, newsOpening } = data;
+
   return (
     <main className="container mx-auto flex-col flex items-center max-w-[800px]  lg:mt-12 mt-4">
-      <BreadcrumbSection
-        breadTwo="event"
-        breadThree="Artfordable by Sidharta Auctioneer"
-      />
+      <BreadcrumbSection breadTwo="article" breadThree={title} />
 
       <article className="mt-12 space-y-8">
         <div className="flex flex-col items-center gap-3 ">
-          <p className=" uppercase text-muted-foreground">03 OCT 2024</p>
-          <Button variant="outline" className="uppercase">
-            Featured News, Store Opening
-          </Button>
-          <h3 className="h3 text-3xl">Bringing Danish Joy to MBH</h3>
+          <p className=" uppercase text-muted-foreground">
+            {moment(createdAt).format("DD MMMM YYYY")}
+          </p>
+          {newsOpening && (
+            <Button variant="outline" className="uppercase">
+              Featured News, Store Opening
+            </Button>
+          )}
+          <h3 className="h3 text-3xl">{title}</h3>
         </div>
         <Image
-          src="/dummy-news.webp"
-          alt="artikel-menu-mall-bekasi-hypermall"
+          src={`http://localhost:3001/${image.name}`}
+          alt={`artikel-megabekasihypermall-${slug}`}
           width={1920}
           height={1080}
           quality={100}
-          className="object-cover w-full rounded-2xl h-[530px]"
+          className="object-cover w-full rounded-2xl aspect-video"
         />
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium,
-          dignissimos alias? Veniam pariatur facere ducimus distinctio
-          laboriosam, soluta eum! Eveniet?
-        </p>
+        <article className="prose">
+          <InnerHTML html={description} />
+        </article>
         <Share
-          urlEmail={"https://www.google.com"}
-          urlTwitter={"https://www.google.com"}
-          urlWhatsapp={"https://www.google.com"}
-          urlFacebook={"https://www.google.com"}
+          urlEmail={`http://localhost:3000/article/${slug}`}
+          urlTwitter={`http://localhost:3000/article/${slug}`}
+          urlWhatsapp={`http://localhost:3000/article/${slug}`}
+          urlFacebook={`http://localhost:3000/article/${slug}`}
         />
       </article>
-      <div className="mt-[120px] space-y-8">
-        <h2 className="text-2xl font-bold text-center">
-          Other Recommendations
-        </h2>
-        <div className="flex max-lg:flex-wrap justify-center gap-8">
-          {[...Array(2)].map((_, index) => (
-            <Card
-              key={index}
-              image={"/dummy-opening-tenant.webp"}
-              title={"Sawadikap – Thailand Culinary Festival"}
-              date={"03 Oct 2024"}
-            />
-          ))}
-        </div>
-      </div>
+      <OtherRecommendation slug={slug} />
     </main>
   );
 }

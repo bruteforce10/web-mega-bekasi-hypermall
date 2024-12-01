@@ -72,7 +72,7 @@ export default function EditArticle() {
   const { isLoadingDirectory, articles } = useSelector(
     (state) => state.directory
   );
-  const article = articles.find((article) => article.slug === slug);
+  const article = articles?.data?.find((article) => article.slug === slug);
 
   const editorRef = useRef(null);
   const [image, setImage] = useState(null);

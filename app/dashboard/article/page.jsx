@@ -19,7 +19,7 @@ export default function ArticlePage() {
       <DataTable
         hrefAddData="/dashboard/article/add"
         columns={columns}
-        data={articles}
+        data={articles.data}
       />
     </div>
   );

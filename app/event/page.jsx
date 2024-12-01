@@ -4,6 +4,7 @@ import Image from "next/image";
 import React from "react";
 import Card from "./_component/Card";
 import moment from "moment";
+import Link from "next/link";
 
 const getData = async () => {
   const res = await fetch(`http://localhost:3001/api/v1/cms/events`, {
@@ -53,9 +54,11 @@ export default async function EventPage() {
                 {moment(HeadlineNewsData.createdAt).format("DD MMM YYYY")}
               </p>
             </div>
-            <Button variant="link" className="p-0 block text-black">
-              lean more
-            </Button>
+            <Link href={`/event/${HeadlineNewsData.slug}`} className="block">
+              <Button variant="link" className="p-0  text-black">
+                lean more
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -66,7 +69,7 @@ export default async function EventPage() {
                 key={index}
                 image={`http://localhost:3001/${item?.image?.name}`}
                 title={item.title}
-                slug={item.slug}
+                slug={`/event/${item.slug}`}
                 date={moment(item.createdAt).format("DD MMM YYYY")}
               />
             ))}

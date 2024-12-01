@@ -1,18 +1,20 @@
 "use client";
 import React, { useEffect } from "react";
-import Card from "./Card";
+import Card from "@/app/event/_component/Card";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEvents } from "@/app/redux/directory/directorySlicer";
+import { fetchArticles } from "@/app/redux/directory/directorySlicer";
 import moment from "moment";
 
-const OtherRecomendation = ({ slug }) => {
-  const { events } = useSelector((state) => state.directory);
+const OtherRecommendation = ({ slug }) => {
+  const { articles } = useSelector((state) => state.directory);
   const dispatch = useDispatch();
-  const randomData = events.filter((item) => item?.slug !== slug).slice(0, 3);
+  const randomData = articles?.data
+    ?.filter((item) => item?.slug !== slug)
+    .slice(0, 3);
 
   useEffect(() => {
-    dispatch(fetchEvents());
-    console.log(events);
+    dispatch(fetchArticles());
+    console.log(articles);
   }, []);
 
   return (
@@ -23,9 +25,9 @@ const OtherRecomendation = ({ slug }) => {
           <Card
             key={index}
             image={`http://localhost:3001/${item?.image?.name}`}
-            title={`${item?.title}`}
+            title={item?.title}
             date={moment(item?.createdAt).format("DD MMMM YYYY")}
-            slug={`/event/${item?.slug}`}
+            slug={`/article/${item?.slug}`}
           />
         ))}
       </div>
@@ -33,4 +35,4 @@ const OtherRecomendation = ({ slug }) => {
   );
 };
 
-export default OtherRecomendation;
+export default OtherRecommendation;
