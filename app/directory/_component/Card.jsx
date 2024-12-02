@@ -9,9 +9,9 @@ const Card = ({ link, title, floor, image }) => {
         <Image
           src={"http://localhost:3001/" + image}
           alt={title}
-          width={280}
-          height={280}
-          className="max-md:w-screen max-md:object-cover"
+          width={180}
+          height={180}
+          className="max-md:w-screen aspect-video w-full object-cover"
         />
         <div className=" px-5 bg-[#F1F5F9] border-r-[1px] h-[120px]  items-center justify-center border-b-[1px] border-l-[1px]  rounded-b-lg  text-center flex flex-col gap-2 w-full  ">
           <p className="font-bold tracking-wide uppercase leading-tight  text-xl">

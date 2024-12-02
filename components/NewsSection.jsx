@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -7,14 +7,25 @@ import "swiper/css/effect-fade";
 import { Pagination, EffectFade } from "swiper/modules";
 import Image from "next/image";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchArticles,
+  setArticleData,
+} from "@/app/redux/directory/directorySlicer";
 
 const NewsSection = () => {
   const { articles } = useSelector((state) => state.directory);
-  const filterArticles = articles?.data
-    ?.filter((item) => item.newsOpening !== true)
+  const dispatch = useDispatch();
+  const filterArticles = articles
+    .filter((item) => item.newsOpening !== true)
     .sort(() => Math.random() - 0.5)
     .slice(0, 3);
+
+  console.log(filterArticles);
+
+  useEffect(() => {
+    dispatch(fetchArticles());
+  }, []);
 
   return (
     <section className="mt-12 md:mt-24 container mx-auto ">

@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import TextTitle from "./TextTitle";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
@@ -10,12 +10,19 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Navigation } from "swiper/modules";
 import { FaArrowAltCircleLeft, FaArrowAltCircleRight } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPromo } from "@/app/redux/directory/directorySlicer";
 
 const CouponSection = () => {
   const { promos } = useSelector((state) => state.directory);
+  const dispatch = useDispatch();
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+
+  useEffect(() => {
+    dispatch(fetchPromo());
+  }, []);
+
   return (
     <section className="bg-cover py-10 md:py-16 bg-center mt-12 md:mt-24 bg-no-repeat bg-[url('/bg-coupon.webp')]">
       <div className="container px-2 mx-auto space-y-12 md:space-y-16">

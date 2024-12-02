@@ -1,16 +1,23 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import TextTitle from "./TextTitle";
 import Image from "next/image";
 import { Button } from "./ui/button";
-import { useSelector } from "react-redux";
 import Link from "next/link";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchArticles } from "@/app/redux/directory/directorySlicer";
 
 const OpeningTenantSection = () => {
   const { articles } = useSelector((state) => state.directory);
-  const filteredAndSorted = articles?.data
-    ?.filter((item) => item.newsOpening === true)
+  const dispatch = useDispatch();
+  const filteredAndSorted = articles
+    .filter((item) => item.newsOpening === true)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  useEffect(() => {
+    dispatch(fetchArticles());
+  }, []);
 
   return (
     <section className="bg-cover  lg:bg-right-bottom flex max-md:flex-col bg-no-repeat bg-[url('/bg-opening-tenant.webp')]">

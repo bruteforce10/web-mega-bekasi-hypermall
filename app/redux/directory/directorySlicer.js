@@ -59,7 +59,7 @@ export const fetchArticles = createAsyncThunk(
     const response = await axios.get(
       "http://localhost:3001/api/v1/cms/articles"
     );
-    return response?.data?.data;
+    return response?.data?.data?.data;
   }
 );
 
