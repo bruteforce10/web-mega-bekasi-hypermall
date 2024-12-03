@@ -10,7 +10,7 @@ const IconTitle = ({ icon, title, subTitle }) => {
       href="#"
       className=" text-white flex items-center  gap-4 hover:opacity-80"
     >
-      <div className="w-12 h-12">{icon}</div>
+      <div className="w-14 h-14">{icon}</div>
       <h5 className="md:text-2xl text-xl font-medium uppercase">
         {title} <br /> {subTitle}
       </h5>

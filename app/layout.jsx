@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FacilitySection from "@/components/FacilitySection";
 import ReduxProvider from "@/components/ReduxProvider";
+import "leaflet/dist/leaflet.css";
 
 const satoshi = localFont({
   src: [

@@ -31,11 +31,12 @@ import {
 import { motion, spring } from "framer-motion";
 import { menuItems } from "@/lib/data";
 import clsx from "clsx";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Input } from "./ui/input";
 import { SearchIcon } from "lucide-react";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
@@ -45,8 +46,10 @@ import { Button } from "./ui/button";
 
 const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const { item_one, item_two, item_three, item_four, item_five } = menuItems;
   const [isScrolled, setIsScrolled] = React.useState(false);
+  const [serachValue, setSearchValue] = React.useState("");
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -82,11 +85,29 @@ const Navbar = () => {
             <Link href="#">
               <FaTiktok className="text-white hover:text-white/70 text-2xl " />
             </Link>
-            <div className="w-full max-sm:hidden">
-              <SearchIcon className="text-black/40 absolute mt-2 ml-2  w-4 h-4 " />
+            <div className="w-full relative max-sm:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute mt-2 mr-2 p-0 right-0 bg-transparent hover:bg-transparent h-fit w-fit"
+                onClick={() => {
+                  setSearchValue("");
+                  router.push(`/search?q=${serachValue}`);
+                }}
+              >
+                <SearchIcon className="text-black/40   w-4 h-4 " />
+              </Button>
               <Input
-                className="w-48 focus:w-60 transition-all  h-8 pl-8 rounded-full bg-white"
+                className="w-48 focus:w-60 transition-all  h-8 pr-8 rounded-full bg-white"
                 placeholder="Search..."
+                value={serachValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setSearchValue("");
+                    router.push(`/search?q=${serachValue}`);
+                  }
+                }}
               />
             </div>
 
@@ -100,8 +121,18 @@ const Navbar = () => {
                   <Input
                     className="rounded-md bg-white"
                     placeholder="Search..."
+                    value={serachValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
                   />
-                  <Button>Search</Button>
+                  <DrawerClose
+                    onClick={() => {
+                      setSearchValue("");
+                      router.push(`/search?q=${serachValue}`);
+                    }}
+                    className="w-full bg-primary p-2 rounded-full text-white"
+                  >
+                    Search
+                  </DrawerClose>
                 </DrawerHeader>
               </DrawerContent>
             </Drawer>

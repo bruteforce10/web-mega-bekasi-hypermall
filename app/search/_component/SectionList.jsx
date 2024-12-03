@@ -11,7 +11,9 @@ const SectionList = ({ Card, result, title }) => {
         classNameTitle={"text-4xl"}
         classNameSubTitle={"lg:text-sm"}
       />
-      <div className="grid grid-cols-4 gap-8">{Card}</div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 mx-auto justify-center gap-8">
+        {Card}
+      </div>
       <Button className="bg-[#F1F5F9] w-fit my-12 text-black/70 tracking-widest rounded-md">
         More {title}
       </Button>
