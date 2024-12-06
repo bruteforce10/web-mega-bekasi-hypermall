@@ -8,9 +8,9 @@ import moment from "moment";
 const OtherRecommendation = ({ slug }) => {
   const { articles } = useSelector((state) => state.directory);
   const dispatch = useDispatch();
-  const randomData = articles?.data
-    ?.filter((item) => item?.slug !== slug)
-    .slice(0, 3);
+  const randomData = articles.filter((item) => item?.slug !== slug).slice(0, 3);
+
+  console.log(randomData);
 
   useEffect(() => {
     dispatch(fetchArticles());

@@ -22,10 +22,20 @@ const BreadcrumbSection = ({ className, breadTwo, breadThree }) => {
             {breadTwo}
           </BreadcrumbLink>
         </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>{breadThree}</BreadcrumbPage>
-        </BreadcrumbItem>
+
+        {breadThree && (
+          <>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                href={`/${breadTwo}/${breadThree}`}
+                className="capitalize"
+              >
+                {breadThree}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          </>
+        )}
       </BreadcrumbList>
     </Breadcrumb>
   );

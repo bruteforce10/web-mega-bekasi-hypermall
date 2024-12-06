@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   fullname: z.string().min(5, {
@@ -65,6 +66,7 @@ export default function VisitGettingHerePage() {
     },
     reValidateMode: "onSubmit",
   });
+  const { toast } = useToast();
 
   async function onSubmit(values) {
     setLoading(true);
@@ -92,6 +94,10 @@ export default function VisitGettingHerePage() {
         throw new Error("Failed to send email");
       }
 
+      toast({
+        title: "Successfully",
+        description: "Hey, your email has been sent successfully",
+      });
       form.reset();
       setLoading(false);
     } catch (error) {
@@ -257,9 +263,12 @@ export default function VisitGettingHerePage() {
                   )}
                 />
 
-                {!loading ? (
-                  <Button disabled className="rounded-lg w-full  md:w-[200px]">
-                    <Loader2 className="animate-spin  " />
+                {loading ? (
+                  <Button
+                    disabled
+                    className="rounded-lg w-full flex gap-1  md:w-[200px]"
+                  >
+                    <Loader2 className="animate-spin  w-4 h-4" />
                     Please wait
                   </Button>
                 ) : (

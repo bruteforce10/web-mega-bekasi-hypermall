@@ -41,7 +41,7 @@ const Footer = () => {
             height={100}
           />
           <p className="text-muted-foreground max-w-[350px]">{address}</p>
-          <div className="space-x-2">
+          <div className="flex items-center gap-2">
             {socialMedia.map((item, index) => (
               <Link href={item.link} key={index}>
                 <Button variant="ghost" size="icon">

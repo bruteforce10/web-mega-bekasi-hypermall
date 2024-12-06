@@ -54,17 +54,16 @@ export default async function ArticlePage({ searchParams }) {
         />
         <div className="flex gap-8 max-lg:flex-col-reverse xl:gap-12">
           <div className="w-full flex-col flex gap-12 ">
-            {data?.data.map((item, index) => (
-              <>
+            {data?.data?.map((item, index) => (
+              <div key={index}>
                 <Card
-                  key={index}
                   link={`/article/${item?.slug}`}
                   image={`http://localhost:3001/${item?.image?.name}`}
                   title={item?.title}
                   description={item?.metaDescription}
                 />
                 <Separator className="last:hidden" />
-              </>
+              </div>
             ))}
             <Paginantion
               limit={limit}
