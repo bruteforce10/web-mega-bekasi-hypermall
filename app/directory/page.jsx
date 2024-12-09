@@ -1,11 +1,10 @@
 import Image from "next/image";
-import React, { Suspense } from "react";
+import React from "react";
 import SelectOps from "./_component/SelectOps";
 import { Button } from "@/components/ui/button";
 import Card from "./_component/Card";
 import { DirectoryOps } from "@/lib/data";
 import SearchInput from "./_component/SearchInput";
-import LoadingSkeleton from "./_component/LoadingSkelton";
 import Link from "next/link";
 import LoadMoreButton from "./_component/LoadMoreButton";
 
@@ -36,56 +35,55 @@ export default async function DirectoryPage({ searchParams }) {
         quality={100}
         className="h-full min-h-[120px] object-cover w-full"
       />
-      <Suspense fallback={<LoadingSkeleton />}>
-        <section className="container flex relative max-lg:flex-col max-lg:items-center gap-12 mx-auto mt-12">
-          <aside className="space-y-4 lg:w-1/3 w-full lg:sticky lg:top-[120px] h-fit">
-            <h5 className="text-xl uppercase text-[#C82435] font-medium">
-              search tenant
-            </h5>
-            <SearchInput value={key} limit={lengthData} />
-            <SelectOps
-              data={floor}
-              title="By Floor"
-              name="floor"
-              limit={lengthData}
-            />
-            <SelectOps
-              data={categories}
-              title="All Category"
-              name="category"
-              limit={lengthData}
-            />
-            <Link
-              href="/directory
+
+      <section className="container flex relative max-lg:flex-col max-lg:items-center gap-12 mx-auto mt-12">
+        <aside className="space-y-4 lg:w-1/3 w-full lg:sticky lg:top-[120px] h-fit">
+          <h5 className="text-xl uppercase text-[#C82435] font-medium">
+            search tenant
+          </h5>
+          <SearchInput value={key} limit={lengthData} />
+          <SelectOps
+            data={floor}
+            title="By Floor"
+            name="floor"
+            limit={lengthData}
+          />
+          <SelectOps
+            data={categories}
+            title="All Category"
+            name="category"
+            limit={lengthData}
+          />
+          <Link
+            href="/directory
             "
-              className="block"
-            >
-              <Button className="w-full rounded-lg">Reset Filter</Button>
-            </Link>
-          </aside>
-          <div className="flex flex-col items-center">
-            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
-              {data.slice(0, limit).map((item, index) => (
-                <Card
-                  key={index}
-                  link={`/directory/${item.slug}`}
-                  title={item.title}
-                  floor={item.location}
-                  image={item.images.images[0].name}
-                />
-              ))}
-              {data.length === 0 && (
-                <p className="text-xl text-muted-foreground">
-                  No Directory Found
-                </p>
-              )}
-            </div>
-            {lengthData > limit && !category && !floorSearch && (
-              <LoadMoreButton limit={limit} />
+            className="block"
+          >
+            <Button className="w-full rounded-lg">Reset Filter</Button>
+          </Link>
+        </aside>
+        <div className="flex flex-col items-center">
+          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+            {data.slice(0, limit).map((item, index) => (
+              <Card
+                key={index}
+                link={`/directory/${item.slug}`}
+                title={item.title}
+                floor={item.location}
+                image={item.images.images[0].name}
+              />
+            ))}
+            {data.length === 0 && (
+              <p className="text-xl text-muted-foreground">
+                No Directory Found
+              </p>
             )}
           </div>
-        </section>
-      </Suspense>
+          {lengthData > limit && !category && !floorSearch && (
+            <LoadMoreButton limit={limit} />
+          )}
+        </div>
+      </section>
     </main>
   );
 }

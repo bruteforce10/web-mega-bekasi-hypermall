@@ -153,6 +153,9 @@ const JumbotronPage = () => {
               Add Jumbotron
             </Label>
             <Input id="pictureUpload" type="file" onChange={onChangeImage} />
+            <p className="text-muted-foreground">
+              Pastikan ukuran gambarnya (1200 x 720) px
+            </p>
           </div>
         </div>
 
